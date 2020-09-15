@@ -1,3 +1,6 @@
 Hello, world!
 
-This class requires work on a VM, so I need something to go in the repo to clone before I can do any real magic.
+This class requires work on a VM, so I need something to go in the repo
+to clone before I can do any real magic.
+
+I'm in.
