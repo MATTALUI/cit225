@@ -3,20 +3,25 @@ SQL> -- Enter code below.
 SQL> -- ------------------------------------------------------------------
 SQL> 
 SQL> -- STEP 1	----------------------------------------------------------
-SQL> SELECT account_number, credit_card_number
-  2  FROM member;
+SQL> COL account_number        FORMAT A12    HEADING "Account|Number"
+SQL> COL credit_card_number    FORMAT A22    HEADING "Credit|Card Number"
+SQL> 
+SQL> SELECT
+  2  	     account_number,
+  3  	     credit_card_number
+  4  FROM    member;
 
-Account                                                                         
-Number     CREDIT_CARD_NUMBER                                                   
----------- -------------------                                                  
-B293-71445 1111-2222-3333-4444                                                  
-B293-71446 2222-3333-4444-5555                                                  
-B293-71447 3333-4444-5555-6666                                                  
-R11-514-34 1111-1111-1111-1111                                                  
-R11-514-35 1111-2222-1111-1111                                                  
-R11-514-36 1111-1111-2222-1111                                                  
-R11-514-37 3333-1111-1111-2222                                                  
-R11-514-38 1111-1111-3333-1111                                                  
+Account      Credit                                                             
+Number       Card Number                                                        
+------------ ----------------------                                             
+B293-71445   1111-2222-3333-4444                                                
+B293-71446   2222-3333-4444-5555                                                
+B293-71447   3333-4444-5555-6666                                                
+R11-514-34   1111-1111-1111-1111                                                
+R11-514-35   1111-2222-1111-1111                                                
+R11-514-36   1111-1111-2222-1111                                                
+R11-514-37   3333-1111-1111-2222                                                
+R11-514-38   1111-1111-3333-1111                                                
 
 8 rows selected.
 
@@ -25,23 +30,28 @@ SQL> -- STEP 2	----------------------------------------------------------
 SQL> COL first_name   FORMAT A12  HEADING "First Name"
 SQL> COL middle_name  FORMAT A12  HEADING "Middle Name"
 SQL> COL last_name    FORMAT A12  HEADING "Last Name"
-SQL> SELECT first_name, middle_name, last_name
-  2  FROM contact;
+SQL> 
+SQL> SELECT
+  2  	       first_name,
+  3  	       middle_name,
+  4  	       last_name
+  5  FROM      contact
+  6  ORDER BY  last_name;
 
 First Name   Middle Name  Last Name                                             
 ------------ ------------ ------------                                          
-Randi        <Null>       Winn                                                  
-Brian        <Null>       Winn                                                  
-Oscar        <Null>       Vizquel                                               
-Doreen       <Null>       Vizquel                                               
-Meaghan      <Null>       Sweeney                                               
-Matthew      <Null>       Sweeney                                               
-Ian          M            Sweeney                                               
 Goeffrey     Ward         Clinton                                               
-Wendy        <Null>       Moss                                                  
 Simon        Jonah        Gretelz                                               
+Wendy        <Null>       Moss                                                  
 Elizabeth    Jane         Royal                                                 
 Brian        Nathan       Smith                                                 
+Ian          M            Sweeney                                               
+Meaghan      <Null>       Sweeney                                               
+Matthew      <Null>       Sweeney                                               
+Oscar        <Null>       Vizquel                                               
+Doreen       <Null>       Vizquel                                               
+Brian        <Null>       Winn                                                  
+Randi        <Null>       Winn                                                  
 
 12 rows selected.
 
@@ -50,8 +60,12 @@ SQL> -- STEP 3	----------------------------------------------------------
 SQL> COL city		 FORMAT A14  HEADING "City"
 SQL> COL state_province  FORMAT A8   HEADING "State|Province"
 SQL> COL postal_code	 FORMAT A6   HEADING "Postal|Code"
-SQL> SELECT city, state_province, postal_code
-  2  FROM address;
+SQL> 
+SQL> SELECT
+  2  	     city,
+  3  	     state_province,
+  4  	     postal_code
+  5  FROM    address;
 
                State    Postal                                                  
 City           Province Code                                                    
@@ -75,87 +89,88 @@ SQL>
 SQL> -- STEP 4	----------------------------------------------------------
 SQL> COL check_out_date  FORMAT A12  HEADING "Check Out|Date"
 SQL> COL return_date	 FORMAT A12  HEADING "Return|Date"
-SQL> SELECT check_out_date, return_date
-  2  FROM rental;
+SQL> 
+SQL> SELECT
+  2  	     check_out_date,
+  3  	     return_date
+  4  FROM    rental;
 
 Check Out    Return                                                             
 Date         Date                                                               
 ------------ ------------                                                       
-16-SEP-20    21-SEP-20                                                          
-16-SEP-20    21-SEP-20                                                          
-16-SEP-20    21-SEP-20                                                          
-16-SEP-20    21-SEP-20                                                          
-16-SEP-20    21-SEP-20                                                          
+21-SEP-20    26-SEP-20                                                          
+21-SEP-20    26-SEP-20                                                          
+21-SEP-20    26-SEP-20                                                          
+21-SEP-20    26-SEP-20                                                          
+21-SEP-20    26-SEP-20                                                          
 
 5 rows selected.
 
 SQL> 
 SQL> -- STEP 5	----------------------------------------------------------
 SQL> COL item_title	    FORMAT A30	HEADING "Item Title"
-SQL> COL item_rating	    FORMAT A5	HEADING "Item|Rating"
+SQL> COL item_rating	    FORMAT A10	HEADING "Item|Rating"
 SQL> COL item_release_date  FORMAT A12	HEADING "Item|Release|Date"
-SQL> SELECT item_title, item_rating, item_release_date
-  2  FROM item;
+SQL> 
+SQL> SELECT
+  2  	     item_title,
+  3  	     item_rating,
+  4  	     item_release_date
+  5  FROM    item;
 
-                                     Item                                       
-                               Item  Release                                    
-Item Title                     Ratin Date                                       
------------------------------- ----- ------------                               
-The Hunt for Red October       PG    02-MAR-90                                  
-Star Wars I                    PG    04-MAY-99                                  
-Star Wars II                   PG    16-MAY-02                                  
-Star Wars II                   PG    16-MAY-02                                  
-Star Wars III                  PG13  19-MAY-05                                  
-The Chronicles of Narnia       PG    16-MAY-02                                  
-RoboCop                        Matur 24-JUL-03                                  
-                               e                                                
-                                                                                
-Pirates of the Caribbean       Teen  30-JUN-03                                  
-The Chronicles of Narnia       Every 30-JUN-03                                  
-                               one                                              
-                                                                                
-MarioKart                      Every 17-NOV-03                                  
-                               one                                              
-                                                                                
-Splinter Cell                  Teen  08-APR-03                                  
-Need for Speed                 Every 15-NOV-04                                  
-                               one                                              
-                                                                                
-The DaVinci Code               Teen  19-MAY-06                                  
-Cars                           Every 28-APR-06                                  
-                               one                                              
-                                                                                
-Beau Geste                     PG    01-MAR-92                                  
-I Remember Mama                NR    05-JAN-98                                  
-Tora! Tora! Tora!              G     02-NOV-99                                  
-A Man for All Seasons          G     28-JUN-94                                  
-Hook                           PG    11-DEC-91                                  
-Around the World in 80 Days    G     04-DEC-92                                  
-Camelot                        G     15-MAY-98                                  
+                                          Item                                  
+                               Item       Release                               
+Item Title                     Rating     Date                                  
+------------------------------ ---------- ------------                          
+The Hunt for Red October       PG         02-MAR-90                             
+Star Wars I                    PG         04-MAY-99                             
+Star Wars II                   PG         16-MAY-02                             
+Star Wars II                   PG         16-MAY-02                             
+Star Wars III                  PG13       19-MAY-05                             
+The Chronicles of Narnia       PG         16-MAY-02                             
+RoboCop                        Mature     24-JUL-03                             
+Pirates of the Caribbean       Teen       30-JUN-03                             
+The Chronicles of Narnia       Everyone   30-JUN-03                             
+MarioKart                      Everyone   17-NOV-03                             
+Splinter Cell                  Teen       08-APR-03                             
+Need for Speed                 Everyone   15-NOV-04                             
+The DaVinci Code               Teen       19-MAY-06                             
+Cars                           Everyone   28-APR-06                             
+Beau Geste                     PG         01-MAR-92                             
+I Remember Mama                NR         05-JAN-98                             
+Tora! Tora! Tora!              G          02-NOV-99                             
+A Man for All Seasons          G          28-JUN-94                             
+Hook                           PG         11-DEC-91                             
+Around the World in 80 Days    G          04-DEC-92                             
+Camelot                        G          15-MAY-98                             
 
 21 rows selected.
 
 SQL> 
 SQL> -- STEP 6	----------------------------------------------------------
 SQL> COL item_title	    FORMAT A30	HEADING "Item Title"
-SQL> COL item_rating	    FORMAT A5	HEADING "Item|Rating"
+SQL> COL item_rating	    FORMAT A15	HEADING "Item|Rating"
 SQL> COL item_release_date  FORMAT A12	HEADING "Item|Release|Date"
-SQL> SELECT item_title, item_rating, item_release_date
-  2  FROM item
-  3  WHERE item_rating = 'PG'
-  4  ORDER BY item_title ASC;
+SQL> 
+SQL> SELECT
+  2  	       item_title,
+  3  	       item_rating,
+  4  	       item_release_date
+  5  FROM      item
+  6  WHERE     item_rating = 'PG'
+  7  ORDER BY  item_title;
 
-                                     Item                                       
-                               Item  Release                                    
-Item Title                     Ratin Date                                       
------------------------------- ----- ------------                               
-Beau Geste                     PG    01-MAR-92                                  
-Hook                           PG    11-DEC-91                                  
-Star Wars I                    PG    04-MAY-99                                  
-Star Wars II                   PG    16-MAY-02                                  
-Star Wars II                   PG    16-MAY-02                                  
-The Chronicles of Narnia       PG    16-MAY-02                                  
-The Hunt for Red October       PG    02-MAR-90                                  
+                                               Item                             
+                               Item            Release                          
+Item Title                     Rating          Date                             
+------------------------------ --------------- ------------                     
+Beau Geste                     PG              01-MAR-92                        
+Hook                           PG              11-DEC-91                        
+Star Wars I                    PG              04-MAY-99                        
+Star Wars II                   PG              16-MAY-02                        
+Star Wars II                   PG              16-MAY-02                        
+The Chronicles of Narnia       PG              16-MAY-02                        
+The Hunt for Red October       PG              02-MAR-90                        
 
 7 rows selected.
 
@@ -164,31 +179,54 @@ SQL> -- STEP 7	----------------------------------------------------------
 SQL> COL first_name   FORMAT A12  HEADING "First Name"
 SQL> COL middle_name  FORMAT A12  HEADING "Middle Name"
 SQL> COL last_name    FORMAT A12  HEADING "Last Name"
-SQL> SELECT first_name, middle_name, last_name
-  2  FROM contact
-  3  WHERE last_name = 'Sweeny'
-  4  AND middle_name IS NULL;
+SQL> 
+SQL> SELECT
+  2  	     first_name,
+  3  	     middle_name,
+  4  	     last_name
+  5  FROM    contact
+  6  WHERE   last_name = 'Sweeney'
+  7  AND     middle_name IS NULL;
 
-no rows selected
+First Name   Middle Name  Last Name                                             
+------------ ------------ ------------                                          
+Meaghan      <Null>       Sweeney                                               
+Matthew      <Null>       Sweeney                                               
+
+2 rows selected.
 
 SQL> 
 SQL> -- STEP 8	----------------------------------------------------------
 SQL> COL first_name   FORMAT A12  HEADING "First Name"
 SQL> COL last_name    FORMAT A12  HEADING "Last Name"
-SQL> SELECT first_name, middle_name, UPPER(last_name)
-  2  FROM contact
-  3  WHERE last_name LIKE UPPER('viz%');
+SQL> 
+SQL> SELECT
+  2  	     first_name,
+  3  	     middle_name,
+  4  	     last_name
+  5  FROM    contact
+  6  WHERE   UPPER(last_name) LIKE UPPER('ViZ%');
 
-no rows selected
+First Name   Middle Name  Last Name                                             
+------------ ------------ ------------                                          
+Oscar        <Null>       Vizquel                                               
+Doreen       <Null>       Vizquel                                               
 
+2 rows selected.
+
+SQL> -- Made ViZ weird cased so I know the case insesitivity works as expected
 SQL> 
 SQL> -- STEP 9	----------------------------------------------------------
 SQL> COL city		 FORMAT A14  HEADING "City"
 SQL> COL state_province  FORMAT A8   HEADING "State|Province"
 SQL> COL postal_code	 FORMAT A6   HEADING "Postal|Code"
-SQL> SELECT city, state_province, postal_code
-  2  FROM address
-  3  WHERE city IN ('Provo', 'San Jose');
+SQL> 
+SQL> SELECT
+  2  	     city,
+  3  	     state_province,
+  4  	     postal_code
+  5  FROM    address
+  6  WHERE   city IN ('Provo', 'San Jose');
 
                State    Postal                                                  
 City           Province Code                                                    
@@ -211,9 +249,12 @@ SQL>
 SQL> -- STEP 10 ----------------------------------------------------------
 SQL> COL item_title	    FORMAT A30	HEADING "Item Title"
 SQL> COL item_release_date  FORMAT A12	HEADING "Item|Release|Date"
-SQL> SELECT item_title, item_release_date
-  2  FROM item
-  3  WHERE item_release_date BETWEEN '01-JAN-2003' AND '31-DEC-2003';
+SQL> 
+SQL> SELECT
+  2  	     item_title,
+  3  	     item_release_date
+  4  FROM    item
+  5  WHERE   item_release_date BETWEEN '01-JAN-2003' AND '31-DEC-2003';
 
                                Item                                             
                                Release                                          
