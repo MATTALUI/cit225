@@ -19,5 +19,14 @@ function sqlr {
   echo "running sql for $lab"
   exit | sql @apply_oracle_$lab.sql
   rm -rfv !(apply_oracle_$lab*)
+  echo
+  echo "CHECKING ERRORS"
+  errors txt
+  echo
+}
+function sqlrc {
+  lab=${PWD##*/}
+  sqlr
+  cat apply_oracle_$lab.txt
 }
 

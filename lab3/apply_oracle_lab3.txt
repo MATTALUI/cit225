@@ -1,0 +1,275 @@
+SQL> 
+SQL> -- Enter code below.
+SQL> -- ------------------------------------------------------------------
+SQL> -- STEP 1	----------------------------------------------------------
+SQL> COL total_rows FORMAT 999 HEADING "Total|Rows"
+SQL> 
+SQL> SELECT	     COUNT(*) AS total_rows
+  2  FROM	     member;
+
+Total                                                                           
+ Rows                                                                           
+-----                                                                           
+    8                                                                           
+
+1 row selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 2	----------------------------------------------------------
+SQL> COL last_name   FORMAT A12 HEADING "Last Name"
+SQL> COL total_names FORMAT 999 HEADING "Total|Names"
+SQL> 
+SQL> SELECT	     last_name
+  2  ,		     COUNT(last_name) AS total_names
+  3  FROM	     contact
+  4  GROUP BY	     last_name
+  5  ORDER BY	     total_names;
+
+             Total                                                              
+Last Name    Names                                                              
+------------ -----                                                              
+Royal            1                                                              
+Gretelz          1                                                              
+Moss             1                                                              
+Smith            1                                                              
+Clinton          1                                                              
+Vizquel          2                                                              
+Winn             2                                                              
+Sweeney          3                                                              
+
+8 rows selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 3	----------------------------------------------------------
+SQL> COL item_rating FORMAT A12 HEADING "Item|Rating"
+SQL> COL total_count FORMAT 999 HEADING "Total|Count"
+SQL> 
+SQL> SELECT	     item_rating
+  2  ,		     COUNT(item_rating) AS total_count
+  3  FROM	     item
+  4  WHERE	     item_rating IN ('G', 'PG', 'NR')
+  5  GROUP BY	     item_rating
+  6  ORDER BY	     item_rating;
+
+Item         Total                                                              
+Rating       Count                                                              
+------------ -----                                                              
+G                4                                                              
+NR               1                                                              
+PG               7                                                              
+
+3 rows selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 4	----------------------------------------------------------
+SQL> COL account_number      FORMAT A10 HEADING "Account|Number"
+SQL> COL credit_card_number  FORMAT A19 HEADING "Credit|Card|Number"
+SQL> COL last_name	     FORMAT A12 HEADING "Last Name"
+SQL> COL total_count	     FORMAT 999 HEADING "Total|Count"
+SQL> 
+SQL> SELECT	     contact.last_name
+  2  ,		     member.account_number
+  3  ,		     member.credit_card_number
+  4  ,		     COUNT(*) AS total_count
+  5  FROM	     contact
+  6  JOIN	     member
+  7  ON 	     contact.member_id = member.member_id
+  8  GROUP BY	     contact.last_name, member.account_number, member.credit_card_number
+  9  HAVING	     COUNT(*) > 1
+ 10  ORDER BY	     total_count DESC;
+
+                        Credit                                                  
+             Account    Card                Total                               
+Last Name    Number     Number              Count                               
+------------ ---------- ------------------- -----                               
+Sweeney      B293-71447 3333-4444-5555-6666     3                               
+Vizquel      B293-71446 2222-3333-4444-5555     2                               
+Winn         B293-71445 1111-2222-3333-4444     2                               
+
+3 rows selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 5	----------------------------------------------------------
+SQL> SET PAGESIZE 99
+SQL> COL last_name	FORMAT A12 HEADING "Last Name"
+SQL> COL city		FORMAT A12 HEADING "City"
+SQL> COL state_province FORMAT A8  HEADING "State|Province"
+SQL> 
+SQL> SELECT DISTINCT contact.last_name
+  2  ,		     address.city
+  3  ,		     address.state_province
+  4  FROM	     contact
+  5  JOIN	     address
+  6  ON 	     contact.contact_id = address.contact_id
+  7  ORDER BY	     contact.last_name;
+
+                          State                                                 
+Last Name    City         Province                                              
+------------ ------------ --------                                              
+Clinton      Provo        Utah                                                  
+Gretelz      Provo        Utah                                                  
+Moss         Provo        Utah                                                  
+Royal        Provo        Utah                                                  
+Smith        Spanish Fork Utah                                                  
+Sweeney      San Jose     CA                                                    
+Vizquel      San Jose     CA                                                    
+Winn         San Jose     CA                                                    
+
+8 rows selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 6	----------------------------------------------------------
+SQL> COL last_name FORMAT A12 HEADING "Last Name"
+SQL> COL telephone FORMAT A14 HEADING "Telephone"
+SQL> 
+SQL> SELECT UNIQUE   c.last_name
+  2  ,		     '('||t.area_code||') '||t.telephone_number as telephone
+  3  from	     contact c
+  4  JOIN	     telephone t
+  5  ON 	     c.contact_id = t.contact_id
+  6  ORDER BY	     c.last_name;
+
+Last Name    Telephone                                                          
+------------ --------------                                                     
+Clinton      (801) 423-1234                                                     
+Gretelz      (801) 423-1236                                                     
+Moss         (801) 423-1235                                                     
+Royal        (801) 423-1237                                                     
+Smith        (801) 423-1238                                                     
+Sweeney      (408) 333-3333                                                     
+Vizquel      (408) 222-2222                                                     
+Winn         (408) 111-1111                                                     
+
+8 rows selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 7	----------------------------------------------------------
+SQL> COL common_lookup_id      FORMAT 9999 HEADING "Common|Lookup ID"
+SQL> COL common_lookup_context FORMAT A30  HEADING "Common|Lookup Context"
+SQL> COL common_lookup_type    FORMAT A16  HEADING "Common|Lookup Type"
+SQL> COL common_lookup_meaning FORMAT A16  HEADING "Common|Lookup Meaning"
+SQL> 
+SQL> SELECT	     common_lookup_id
+  2  ,		     common_lookup_context
+  3  ,		     common_lookup_type
+  4  ,		     common_lookup_meaning
+  5  FROM	     common_lookup
+  6  WHERE	     common_lookup_type IN ('BLU-RAY', 'DVD_FULL_SCREEN', 'DVD_WIDE_SCREEN')
+  7  ORDER BY	     common_lookup_type;
+
+   Common Common                         Common           Common                
+Lookup ID Lookup Context                 Lookup Type      Lookup Meaning        
+--------- ------------------------------ ---------------- ----------------      
+     1015 ITEM                           BLU-RAY          Blu-ray               
+     1010 ITEM                           DVD_FULL_SCREEN  DVD: Full Screen      
+     1011 ITEM                           DVD_WIDE_SCREEN  DVD: Wide Screen      
+
+3 rows selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 8	----------------------------------------------------------
+SQL> COL item_title  FORMAT A28 HEADING "Item Title"
+SQL> COL item_rating FORMAT A6	HEADING "Item|Rating"
+SQL> 
+SQL> SELECT	     item.item_title
+  2  ,		     item.item_rating
+  3  FROM	     rental_item
+  4  JOIN	     item
+  5  ON 	     rental_item.item_id = item.item_id
+  6  WHERE	     item.item_type IN (
+  7  	     SELECT	     common_lookup_id
+  8  	     FROM	     common_lookup
+  9  	     WHERE	     common_lookup_type IN ('BLU-RAY', 'DVD_FULL_SCREEN', 'DVD_WIDE_SCREEN')
+ 10  );
+
+                             Item                                               
+Item Title                   Rating                                             
+---------------------------- ------                                             
+Star Wars I                  PG                                                 
+Star Wars II                 PG                                                 
+Star Wars III                PG13                                               
+I Remember Mama              NR                                                 
+Camelot                      G                                                  
+Hook                         PG                                                 
+The Hunt for Red October     PG                                                 
+
+7 rows selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 9	----------------------------------------------------------
+SQL> COL common_lookup_id      FORMAT 9999 HEADING "Common|Lookup ID"
+SQL> COL common_lookup_context FORMAT A30  HEADING "Common|Lookup Context"
+SQL> COL common_lookup_type    FORMAT A16  HEADING "Common|Lookup Type"
+SQL> COL common_lookup_meaning FORMAT A16  HEADING "Common|Lookup Meaning"
+SQL> COL card_total	       FORMAT 999  HEADING "Card|Total"
+SQL> 
+SQL> SELECT	     c.common_lookup_id
+  2  ,		     c.common_lookup_context
+  3  ,		     c.common_lookup_type
+  4  ,		     c.common_lookup_meaning
+  5  ,		     COUNT(m.credit_card_type) AS card_total
+  6  FROM	     common_lookup c
+  7  JOIN	     member m
+  8  ON 	     m.credit_card_type = c.common_lookup_id
+  9  WHERE	     c.common_lookup_type IN ('DISCOVER_CARD', 'MASTER_CARD', 'VISA_CARD')
+ 10  GROUP BY	     c.common_lookup_id
+ 11  ,		     c.common_lookup_context
+ 12  ,		     c.common_lookup_type
+ 13  ,		     c.common_lookup_meaning
+ 14  ORDER BY	     c.common_lookup_meaning;
+
+   Common Common                         Common           Common            Card
+Lookup ID Lookup Context                 Lookup Type      Lookup Meaning   Total
+--------- ------------------------------ ---------------- ---------------- -----
+     1005 MEMBER                         DISCOVER_CARD    Discover Card        3
+     1007 MEMBER                         VISA_CARD        Visa Card            5
+
+2 rows selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 10 ----------------------------------------------------------
+SQL> COL common_lookup_id      FORMAT 9999 HEADING "Common|Lookup ID"
+SQL> COL common_lookup_context FORMAT A30  HEADING "Common|Lookup Context"
+SQL> COL common_lookup_type    FORMAT A16  HEADING "Common|Lookup Type"
+SQL> COL common_lookup_meaning FORMAT A16  HEADING "Common|Lookup Meaning"
+SQL> COL card_total	       FORMAT 999  HEADING "Card|Total"
+SQL> 
+SQL> SELECT	     c.common_lookup_id
+  2  ,		     c.common_lookup_context
+  3  ,		     c.common_lookup_type
+  4  ,		     c.common_lookup_meaning
+  5  ,		     COUNT(m.credit_card_type) AS card_total
+  6  FROM	     common_lookup c
+  7  FULL JOIN	     member m
+  8  ON 	     m.credit_card_type = c.common_lookup_id
+  9  WHERE	     c.common_lookup_type IN ('DISCOVER_CARD', 'MASTER_CARD', 'VISA_CARD')
+ 10  GROUP BY	     c.common_lookup_id
+ 11  ,		     c.common_lookup_context
+ 12  ,		     c.common_lookup_type
+ 13  ,		     c.common_lookup_meaning
+ 14  HAVING	     COUNT(m.credit_card_type) = 0
+ 15  ORDER BY	     c.common_lookup_meaning;
+
+   Common Common                         Common           Common            Card
+Lookup ID Lookup Context                 Lookup Type      Lookup Meaning   Total
+--------- ------------------------------ ---------------- ---------------- -----
+     1006 MEMBER                         MASTER_CARD      Master Card          0
+
+1 row selected.
+
+SQL> 
+SQL> 
+SQL> -- ------------------------------------------------------------------
+SQL> -- Enter lab code above.
+SQL> 
+SQL> -- Close log file.
+SQL> SPOOL OFF
