@@ -187,17 +187,18 @@ SQL> SELECT	     item.item_title
   7  	     SELECT	     common_lookup_id
   8  	     FROM	     common_lookup
   9  	     WHERE	     common_lookup_type IN ('BLU-RAY', 'DVD_FULL_SCREEN', 'DVD_WIDE_SCREEN')
- 10  );
+ 10  )
+ 11  ORDER BY	     item.item_title;
 
                              Item                                               
 Item Title                   Rating                                             
 ---------------------------- ------                                             
+Camelot                      G                                                  
+Hook                         PG                                                 
+I Remember Mama              NR                                                 
 Star Wars I                  PG                                                 
 Star Wars II                 PG                                                 
 Star Wars III                PG13                                               
-I Remember Mama              NR                                                 
-Camelot                      G                                                  
-Hook                         PG                                                 
 The Hunt for Red October     PG                                                 
 
 7 rows selected.

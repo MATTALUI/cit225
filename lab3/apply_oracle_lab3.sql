@@ -140,7 +140,8 @@ WHERE		item.item_type IN (
 	SELECT		common_lookup_id
 	FROM 		common_lookup
 	WHERE		common_lookup_type IN ('BLU-RAY', 'DVD_FULL_SCREEN', 'DVD_WIDE_SCREEN')
-);
+)
+ORDER BY	item.item_title;
 
 
 -- STEP 9  ----------------------------------------------------------
