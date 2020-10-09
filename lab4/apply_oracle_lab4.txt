@@ -1,0 +1,356 @@
+SQL> 
+SQL> -- Enter code below.
+SQL> -- ------------------------------------------------------------------
+SQL> 
+SQL> -- STEP 1	----------------------------------------------------------
+SQL> COL member_id FORMAT 9999 HEADING "Member|ID #"
+SQL> 
+SQL> SELECT	     DISTINCT(m.member_id)
+  2  FROM	     member m
+  3  JOIN	     contact c
+  4  ON 	     m.member_id = c.member_id
+  5  WHERE	     c.last_name = 'Sweeney';
+
+Member                                                                          
+  ID #                                                                          
+------                                                                          
+  1003                                                                          
+
+1 row selected.
+
+SQL> 
+SQL> -- STEP 2	----------------------------------------------------------
+SQL> COL last_name	    FORMAT A10 HEADING "Last Name"
+SQL> COL account_number     FORMAT A10 HEADING "Account|Number"
+SQL> COL credit_card_number FORMAT A19 HEADING "Credit Card Number"
+SQL> 
+SQL> SELECT	     c.last_name
+  2  ,		     m.account_number
+  3  ,		     m.credit_card_number
+  4  FROM	     member m
+  5  JOIN	     contact c
+  6  ON 	     m.member_id = c.member_id
+  7  WHERE	     UPPER(c.last_name) = UPPER('SwEeNeY');
+
+           Account                                                              
+Last Name  Number     Credit Card Number                                        
+---------- ---------- -------------------                                       
+Sweeney    B293-71447 3333-4444-5555-6666                                       
+Sweeney    B293-71447 3333-4444-5555-6666                                       
+Sweeney    B293-71447 3333-4444-5555-6666                                       
+
+3 rows selected.
+
+SQL> 
+SQL> -- STEP 3	----------------------------------------------------------
+SQL> COL last_name	    FORMAT A10 HEADING "Last Name"
+SQL> COL account_number     FORMAT A10 HEADING "Account|Number"
+SQL> COL credit_card_number FORMAT A19 HEADING "Credit Card Number"
+SQL> 
+SQL> SELECT DISTINCT c.last_name
+  2  ,		     m.account_number
+  3  ,		     m.credit_card_number
+  4  FROM	     member m
+  5  JOIN	     contact c
+  6  ON 	     m.member_id = c.member_id
+  7  WHERE	     UPPER(c.last_name) = UPPER('SwEeNeY');
+
+           Account                                                              
+Last Name  Number     Credit Card Number                                        
+---------- ---------- -------------------                                       
+Sweeney    B293-71447 3333-4444-5555-6666                                       
+
+1 row selected.
+
+SQL> 
+SQL> -- STEP 4	----------------------------------------------------------
+SQL> COL last_name	    FORMAT A10 HEADING "Last Name"
+SQL> COL account_number     FORMAT A10 HEADING "Account|Number"
+SQL> COL credit_card_number FORMAT A19 HEADING "Credit Card Number"
+SQL> COL address	    FORMAT A22 HEADING "Address"
+SQL> 
+SQL> SELECT DISTINCT c.last_name
+  2  ,		     m.account_number
+  3  ,		     m.credit_card_number
+  4  ,		     a.city||', '||a.state_province||' '||a.postal_code as address
+  5  FROM	     member m
+  6  JOIN	     contact c
+  7  ON 	     m.member_id = c.member_id
+  8  JOIN	     address a
+  9  ON 	     c.contact_id = a.contact_id
+ 10  WHERE	     c.last_name = 'Vizquel';
+
+           Account                                                              
+Last Name  Number     Credit Card Number  Address                               
+---------- ---------- ------------------- ----------------------                
+Vizquel    B293-71446 2222-3333-4444-5555 San Jose, CA 95192                    
+
+1 row selected.
+
+SQL> 
+SQL> -- STEP 5	----------------------------------------------------------
+SQL> SET PAGESIZE 99
+SQL> COL last_name	    FORMAT A10 HEADING "Last Name"
+SQL> COL account_number     FORMAT A10 HEADING "Account|Number"
+SQL> COL credit_card_number FORMAT A19 HEADING "Credit Card Number"
+SQL> COL address	    FORMAT A22 HEADING "Address"
+SQL> 
+SQL> SELECT DISTINCT c.last_name
+  2  ,		     m.account_number
+  3  ,		     m.credit_card_number
+  4  ,		     s.street_address||CHR(10)
+  5  || 	     a.city||', '||a.state_province||' '||a.postal_code as address
+  6  FROM	     member m
+  7  JOIN	     contact c
+  8  ON 	     m.member_id = c.member_id
+  9  JOIN	     address a
+ 10  ON 	     c.contact_id = a.contact_id
+ 11  JOIN	     street_address s
+ 12  ON 	     a.address_id = s.address_id
+ 13  WHERE	     c.last_name = 'Vizquel';
+
+           Account                                                              
+Last Name  Number     Credit Card Number  Address                               
+---------- ---------- ------------------- ----------------------                
+Vizquel    B293-71446 2222-3333-4444-5555 12 El Camino Real                     
+                                          San Jose, CA 95192                    
+                                                                                
+
+1 row selected.
+
+SQL> 
+SQL> -- STEP 6	----------------------------------------------------------
+SQL> SET PAGESIZE 99
+SQL> COL last_name	    FORMAT A10 HEADING "Last Name"
+SQL> COL account_number     FORMAT A10 HEADING "Account|Number"
+SQL> COL credit_card_number FORMAT A19 HEADING "Credit Card Number"
+SQL> COL address	    FORMAT A22 HEADING "Address"
+SQL> 
+SQL> SELECT DISTINCT c.last_name
+  2  ,		     m.account_number
+  3  ,		     s.street_address||CHR(10)
+  4  || 	     a.city||', '||a.state_province||' '||a.postal_code as address
+  5  ,		     '('||t.area_code||') '||t.telephone_number as telephone
+  6  FROM	     member m
+  7  JOIN	     contact c
+  8  ON 	     m.member_id = c.member_id
+  9  JOIN	     address a
+ 10  ON 	     c.contact_id = a.contact_id
+ 11  JOIN	     street_address s
+ 12  ON 	     a.address_id = s.address_id
+ 13  JOIN	     telephone t
+ 14  ON 	     c.contact_id = t.contact_id
+ 15  WHERE	     c.last_name = 'Vizquel';
+
+           Account                                                              
+Last Name  Number     Address                Telephone                          
+---------- ---------- ---------------------- ------------------                 
+Vizquel    B293-71446 12 El Camino Real      (408) 222-2222                     
+                      San Jose, CA 95192                                        
+                                                                                
+
+1 row selected.
+
+SQL> 
+SQL> -- STEP 7	----------------------------------------------------------
+SQL> COL last_name	FORMAT A12 HEADING "Last Name"
+SQL> COL account_number FORMAT A10 HEADING "Account|Number"
+SQL> COL address	FORMAT A22 HEADING "Address"
+SQL> COL telephone	FORMAT A14 HEADING "Telephone"
+SQL> 
+SQL> SELECT DISTINCT c.last_name
+  2  ,		     m.account_number
+  3  ,		     s.street_address||CHR(10)
+  4  || 	     a.city||', '||a.state_province||' '||a.postal_code as address
+  5  ,		     '('||t.area_code||') '||t.telephone_number as telephone
+  6  FROM	     member m
+  7  JOIN	     contact c
+  8  ON 	     m.member_id = c.member_id
+  9  JOIN	     address a
+ 10  ON 	     c.contact_id = a.contact_id
+ 11  JOIN	     street_address s
+ 12  ON 	     a.address_id = s.address_id
+ 13  JOIN	     telephone t
+ 14  ON 	     c.contact_id = t.contact_id;
+
+             Account                                                            
+Last Name    Number     Address                Telephone                        
+------------ ---------- ---------------------- --------------                   
+Clinton      R11-514-34 118 South 9th East     (801) 423-1234                   
+                        Provo, Utah 84606                                       
+                                                                                
+Vizquel      B293-71446 12 El Camino Real      (408) 222-2222                   
+                        San Jose, CA 95192                                      
+                                                                                
+Gretelz      R11-514-36 2118 South 7th East    (801) 423-1236                   
+                        Provo, Utah 84606                                       
+                                                                                
+Royal        R11-514-37 2228 South 14th East   (801) 423-1237                   
+                        Provo, Utah 84606                                       
+                                                                                
+Winn         B293-71445 10 El Camino Real      (408) 111-1111                   
+                        San Jose, CA 95192                                      
+                                                                                
+Sweeney      B293-71447 14 El Camino Real      (408) 333-3333                   
+                        San Jose, CA 95192                                      
+                                                                                
+Moss         R11-514-35 1218 South 10th East   (801) 423-1235                   
+                        Provo, Utah 84606                                       
+                                                                                
+Smith        R11-514-38 333 North 2nd East     (801) 423-1238                   
+                        Spanish Fork, Utah 846                                  
+                        06                                                      
+                                                                                
+
+8 rows selected.
+
+SQL> 
+SQL> -- STEP 8	----------------------------------------------------------
+SQL> SET PAGESIZE 99
+SQL> COL last_name	FORMAT A12 HEADING "Last Name"
+SQL> COL account_number FORMAT A10 HEADING "Account|Number"
+SQL> COL address	FORMAT A22 HEADING "Address"
+SQL> COL telephone	FORMAT A14 HEADING "Telephone"
+SQL> 
+SQL> SELECT DISTINCT c.last_name
+  2  ,		     m.account_number
+  3  ,		     s.street_address||CHR(10)
+  4  || 	     a.city||', '||a.state_province||' '||a.postal_code as address
+  5  ,		     '('||t.area_code||') '||t.telephone_number as telephone
+  6  FROM	     member m
+  7  JOIN	     contact c
+  8  ON 	     m.member_id = c.member_id
+  9  JOIN	     address a
+ 10  ON 	     c.contact_id = a.contact_id
+ 11  JOIN	     street_address s
+ 12  ON 	     a.address_id = s.address_id
+ 13  JOIN	     telephone t
+ 14  ON 	     c.contact_id = t.contact_id
+ 15  RIGHT JOIN      rental r
+ 16  ON 	     c.contact_id = r.customer_id
+ 17  ORDER BY	     c.last_name;
+
+             Account                                                            
+Last Name    Number     Address                Telephone                        
+------------ ---------- ---------------------- --------------                   
+Sweeney      B293-71447 14 El Camino Real      (408) 333-3333                   
+                        San Jose, CA 95192                                      
+                                                                                
+Vizquel      B293-71446 12 El Camino Real      (408) 222-2222                   
+                        San Jose, CA 95192                                      
+                                                                                
+Winn         B293-71445 10 El Camino Real      (408) 111-1111                   
+                        San Jose, CA 95192                                      
+                                                                                
+
+3 rows selected.
+
+SQL> 
+SQL> -- STEP 9	----------------------------------------------------------
+SQL> COL last_name	FORMAT A12 HEADING "Last Name"
+SQL> COL account_number FORMAT A10 HEADING "Account|Number"
+SQL> COL address	FORMAT A22 HEADING "Address"
+SQL> COL telephone	FORMAT A14 HEADING "Telephone"
+SQL> 
+SQL> SELECT DISTINCT c.last_name
+  2  ,		     m.account_number
+  3  ,		     s.street_address||CHR(10)
+  4  || 	     a.city||', '||a.state_province||' '||a.postal_code as address
+  5  ,		     '('||t.area_code||') '||t.telephone_number as telephone
+  6  FROM	     member m
+  7  JOIN	     contact c
+  8  ON 	     m.member_id = c.member_id
+  9  JOIN	     address a
+ 10  ON 	     c.contact_id = a.contact_id
+ 11  JOIN	     street_address s
+ 12  ON 	     a.address_id = s.address_id
+ 13  JOIN	     telephone t
+ 14  ON 	     c.contact_id = t.contact_id
+ 15  FULL JOIN	     rental r
+ 16  ON 	     c.contact_id = r.customer_id
+ 17  GROUP BY	     c.last_name
+ 18  ,		     m.account_number
+ 19  ,		     s.street_address||CHR(10)
+ 20  || 	     a.city||', '||a.state_province||' '||a.postal_code
+ 21  ,		     '('||t.area_code||') '||t.telephone_number
+ 22  HAVING	     COUNT(r.rental_id) = 0
+ 23  ORDER BY	     c.last_name;
+
+             Account                                                            
+Last Name    Number     Address                Telephone                        
+------------ ---------- ---------------------- --------------                   
+Clinton      R11-514-34 118 South 9th East     (801) 423-1234                   
+                        Provo, Utah 84606                                       
+                                                                                
+Gretelz      R11-514-36 2118 South 7th East    (801) 423-1236                   
+                        Provo, Utah 84606                                       
+                                                                                
+Moss         R11-514-35 1218 South 10th East   (801) 423-1235                   
+                        Provo, Utah 84606                                       
+                                                                                
+Royal        R11-514-37 2228 South 14th East   (801) 423-1237                   
+                        Provo, Utah 84606                                       
+                                                                                
+Smith        R11-514-38 333 North 2nd East     (801) 423-1238                   
+                        Spanish Fork, Utah 846                                  
+                        06                                                      
+                                                                                
+
+5 rows selected.
+
+SQL> 
+SQL> -- STEP 10 ----------------------------------------------------------
+SQL> COL full_name	FORMAT A16 HEADING "Last Name"
+SQL> COL account_number FORMAT A10 HEADING "Account|Number"
+SQL> COL address	FORMAT A25 HEADING "Address"
+SQL> COL item_title	FORMAT A14 HEADING "Item Title"
+SQL> 
+SQL> SELECT DISTINCT c.last_name||', '||c.first_name as full_name
+  2  ,		     m.account_number
+  3  ,		     '('||t.area_code||') '||t.telephone_number||CHR(10)
+  4  || 	     s.street_address||CHR(10)
+  5  || 	     a.city||', '||a.state_province||' '||a.postal_code as address
+  6  ,		     i.item_title
+  7  FROM	     member m
+  8  JOIN	     contact c
+  9  ON 	     m.member_id = c.member_id
+ 10  JOIN	     address a
+ 11  ON 	     c.contact_id = a.contact_id
+ 12  JOIN	     street_address s
+ 13  ON 	     a.address_id = s.address_id
+ 14  JOIN	     telephone t
+ 15  ON 	     c.contact_id = t.contact_id
+ 16  RIGHT JOIN      rental r
+ 17  ON 	     c.contact_id = r.customer_id
+ 18  JOIN	     rental_item ri
+ 19  ON 	     ri.rental_id = r.rental_id
+ 20  JOIN	     item i
+ 21  ON 	     i.item_id = ri.item_id
+ 22  WHERE	     i.item_title LIKE 'Stir Wars%'
+ 23  OR 	     i.item_title LIKE 'Star Wars%'
+ 24  ORDER BY	     i.item_title;
+
+                 Account                                                        
+Last Name        Number     Address                   Item Title                
+---------------- ---------- ------------------------- --------------            
+Vizquel, Oscar   B293-71446 (408) 222-2222            Star Wars I               
+                            12 El Camino Real                                   
+                            San Jose, CA 95192                                  
+                                                                                
+Vizquel, Oscar   B293-71446 (408) 222-2222            Star Wars II              
+                            12 El Camino Real                                   
+                            San Jose, CA 95192                                  
+                                                                                
+Vizquel, Oscar   B293-71446 (408) 222-2222            Star Wars III             
+                            12 El Camino Real                                   
+                            San Jose, CA 95192                                  
+                                                                                
+
+3 rows selected.
+
+SQL> 
+SQL> ---------------------------------------------------------------------
+SQL> -- Enter lab code above.
+SQL> 
+SQL> -- Close log file.
+SQL> SPOOL OFF
