@@ -1,0 +1,465 @@
+SQL> 
+SQL> -- Enter code below.
+SQL> -- ------------------------------------------------------------------
+SQL> -- STEP 1	----------------------------------------------------------
+SQL> COL system_user_id FORMAT 9999 HEADING "System|User|ID #"
+SQL> 
+SQL> SELECT DISTINCT system_user_id
+  2  FROM	     system_user
+  3  WHERE	     system_user_name = 'DBA1';
+
+System                                                                          
+  User                                                                          
+  ID #                                                                          
+------                                                                          
+  1001                                                                          
+
+1 row selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 2	----------------------------------------------------------
+SQL> COL system_user_id   FORMAT 9999 HEADING "System|User|ID #"
+SQL> COL system_user_name FORMAT A20  HEADING "System|User|Name"
+SQL> 
+SQL> SELECT	     system_user_id
+  2  ,		     system_user_name
+  3  FROM	     system_user
+  4  WHERE	     system_user_name = 'DBA1';
+
+System System                                                                   
+  User User                                                                     
+  ID # Name                                                                     
+------ --------------------                                                     
+  1001 DBA1                                                                     
+
+1 row selected.
+
+SQL> 
+SQL> -- STEP 3	----------------------------------------------------------
+SQL> COL system_user_id1   FORMAT 9999 HEADING "System User|ID #"
+SQL> COL system_user_name1 FORMAT 9999 HEADING "System User|ID #"
+SQL> COL system_user_id2   FORMAT 9999 HEADING "Created By|System User|ID #"
+SQL> COL system_user_name2 FORMAT A12  HEADING "Created By|System User|Name"
+SQL> 
+SQL> SELECT	     su1.system_user_id   as system_user_id1
+  2  ,		     su1.system_user_name as system_user_name1
+  3  ,		     su2.system_user_id   as system_user_id2
+  4  ,		     su2.system_user_name as system_user_name2
+  5  FROM	     system_user su1
+  6  JOIN	     system_user su2
+  7  ON 	     su1.created_by = su2.system_user_id
+  8  WHERE	     su1.system_user_name = 'DBA1';
+
+                                  Created By Created By                         
+System User System User          System User System User                        
+       ID # ID #                        ID # Name                               
+----------- -------------------- ----------- ------------                       
+       1001 DBA1                           1 SYSADMIN                           
+
+1 row selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 4	----------------------------------------------------------
+SQL> COL system_user_id1   FORMAT 9999 HEADING "System User|ID #"
+SQL> COL system_user_name1 FORMAT A12  HEADING "System User|Name"
+SQL> COL system_user_id2   FORMAT 9999 HEADING "System User|Name"
+SQL> COL system_user_name2 FORMAT A12  HEADING "Created By|System User|Name"
+SQL> COL system_user_id3   FORMAT 9999 HEADING "Last|Updated By|System User|ID #"
+SQL> COL system_user_name3 FORMAT A12  HEADING "Last|Updated By|System User|Name"
+SQL> 
+SQL> 
+SQL> SELECT	     su1.system_user_id   as system_user_id1
+  2  ,		     su1.system_user_name as system_user_name1
+  3  ,		     su2.system_user_id   as system_user_id2
+  4  ,		     su2.system_user_name as system_user_name2
+  5  ,		     su3.system_user_id   as sustem_user_id3
+  6  ,		     su3.system_user_name as system_user_name3
+  7  FROM	     system_user su1
+  8  JOIN	     system_user su2
+  9  ON 	     su1.created_by = su2.system_user_id
+ 10  JOIN	     system_user su3
+ 11  ON 	     su1.last_updated_by = su3.system_user_id
+ 12  WHERE	     su1.system_user_name = 'DBA1';
+
+                                                                  Last          
+                                     Created By                   Updated By    
+System User System User  System User System User                  System User   
+       ID # Name                Name Name         SUSTEM_USER_ID3 Name          
+----------- ------------ ----------- ------------ --------------- ------------  
+       1001 DBA1                   1 SYSADMIN                   1 SYSADMIN      
+
+1 row selected.
+
+SQL> 
+SQL> -- STEP 5	----------------------------------------------------------
+SQL> COL system_user_id1   FORMAT 9999 HEADING "System User|ID #"
+SQL> COL system_user_name1 FORMAT A12  HEADING "System User|Name"
+SQL> COL system_user_id2   FORMAT 9999 HEADING "System User|Name"
+SQL> COL system_user_name2 FORMAT A12  HEADING "Created By|System User|Name"
+SQL> COL system_user_id3   FORMAT 9999 HEADING "Last|Updated By|System User|ID #"
+SQL> COL system_user_name3 FORMAT A12  HEADING "Last|Updated By|System User|Name"
+SQL> 
+SQL> 
+SQL> SELECT	     su1.system_user_id   as system_user_id1
+  2  ,		     su1.system_user_name as system_user_name1
+  3  ,		     su2.system_user_id   as system_user_id2
+  4  ,		     su2.system_user_name as system_user_name2
+  5  ,		     su3.system_user_id   as sustem_user_id3
+  6  ,		     su3.system_user_name as system_user_name3
+  7  FROM	     system_user su1
+  8  JOIN	     system_user su2
+  9  ON 	     su1.created_by = su2.system_user_id
+ 10  JOIN	     system_user su3
+ 11  ON 	     su1.last_updated_by = su3.system_user_id;
+
+                                                                  Last          
+                                     Created By                   Updated By    
+System User System User  System User System User                  System User   
+       ID # Name                Name Name         SUSTEM_USER_ID3 Name          
+----------- ------------ ----------- ------------ --------------- ------------  
+          1 SYSADMIN               1 SYSADMIN                   1 SYSADMIN      
+       1001 DBA1                   1 SYSADMIN                   1 SYSADMIN      
+       1002 DBA2                   1 SYSADMIN                   1 SYSADMIN      
+
+3 rows selected.
+
+SQL> 
+SQL> -- STEP 6	----------------------------------------------------------
+SQL> DROP   TABLE    rating_agency;
+DROP   TABLE	rating_agency
+            	*
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+SQL> CREATE TABLE    rating_agency
+  2  (	     rating_agency_id INT
+  3  ,	     rating_agency_abbr VARCHAR(4)
+  4  ,	     rating_agency_name VARCHAR(40)
+  5  ,	     created_by INT
+  6  ,	     creation_date DATE
+  7  ,	     last_updated_by INT
+  8  ,	     last_update_date DATE
+  9  ,	     CONSTRAINT pk_rating_agency PRIMARY KEY (rating_agency_id)
+ 10  ,	     CONSTRAINT uq_rating_agency UNIQUE (rating_agency_abbr)
+ 11  ,	     CONSTRAINT fk_rating_agency1 FOREIGN KEY (created_by) REFERENCES system_user (system_user_id)
+ 12  ,	     CONSTRAINT fk_rating_agency2 FOREIGN KEY (last_updated_by) REFERENCES system_user (system_user_id)
+ 13  ,	     CONSTRAINT nn_rating_agency_1 CHECK (rating_agency_abbr IS NOT NULL)
+ 14  ,	     CONSTRAINT nn_rating_agency_2 CHECK (rating_agency_name IS NOT NULL)
+ 15  ,	     CONSTRAINT nn_rating_agency_3 CHECK (created_by IS NOT NULL)
+ 16  ,	     CONSTRAINT nn_rating_agency_4 CHECK (creation_date IS NOT NULL)
+ 17  ,	     CONSTRAINT nn_rating_agency_5 CHECK (last_updated_by IS NOT NULL)
+ 18  ,	     CONSTRAINT nn_rating_agency_6 CHECK (last_update_date IS NOT NULL)
+ 19  );
+
+Table created.
+
+SQL> DROP	     sequence rating_agency_s1;
+DROP 		sequence rating_agency_s1
+     		         *
+ERROR at line 1:
+ORA-02289: sequence does not exist 
+
+
+SQL> CREATE	     sequence rating_agency_s1 start with 1001 increment by 1;
+
+Sequence created.
+
+SQL> 
+SQL> -- STEP 7	----------------------------------------------------------
+SQL> INSERT INTO	     rating_agency
+  2  (	     rating_agency_id
+  3  ,	     rating_agency_abbr
+  4  ,	     rating_agency_name
+  5  ,	     created_by
+  6  ,	     creation_date
+  7  ,	     last_updated_by
+  8  ,	     last_update_date
+  9  )
+ 10  VALUES
+ 11  (	     rating_agency_s1.NEXTVAL
+ 12  ,	     'ESRB'
+ 13  ,	     'Entertainment Software Rating Board'
+ 14  ,	     (
+ 15  		     SELECT system_user_id
+ 16  		     FROM system_user
+ 17  		     WHERE system_user_name = 'DBA2'
+ 18  	     )
+ 19  ,	     SYSDATE
+ 20  ,	     (
+ 21  		     SELECT system_user_id
+ 22  		     FROM system_user
+ 23  		     WHERE system_user_name='DBA2'
+ 24  	     )
+ 25  ,	     SYSDATE
+ 26  );
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO	     rating_agency
+  2  (	     rating_agency_id
+  3  ,	     rating_agency_abbr
+  4  ,	     rating_agency_name
+  5  ,	     created_by
+  6  ,	     creation_date
+  7  ,	     last_updated_by
+  8  ,	     last_update_date
+  9  )
+ 10  VALUES
+ 11  (	     rating_agency_s1.NEXTVAL
+ 12  ,	     'MPAA'
+ 13  ,	     'Motion Picture Association of America'
+ 14  ,	     (
+ 15  		     SELECT system_user_id
+ 16  		     FROM system_user
+ 17  		     WHERE system_user_name = 'DBA2'
+ 18  	     )
+ 19  ,	     SYSDATE
+ 20  ,	     (
+ 21  		     SELECT system_user_id
+ 22  		     FROM system_user
+ 23  		     WHERE system_user_name='DBA2'
+ 24  	     )
+ 25  ,	     SYSDATE
+ 26  );
+
+1 row created.
+
+SQL> 
+SQL> COL rating_agency_id    FORMAT 9999 HEADING "Rating|Agency|ID #"
+SQL> COL rating_agency_abbr  FORMAT A6	 HEADING "Rating|Agency|Abbr"
+SQL> COL rating_agency_name  FORMAT A40  HEADING "Rating Agency"
+SQL> 
+SQL> SELECT	     rating_agency_id
+  2  ,		     rating_agency_abbr
+  3  ,		     rating_agency_name
+  4  FROM	     rating_agency;
+
+Rating Rating                                                                   
+Agency Agency                                                                   
+  ID # Abbr   Rating Agency                                                     
+------ ------ ----------------------------------------                          
+  1001 ESRB   Entertainment Software Rating Board                               
+  1002 MPAA   Motion Picture Association of America                             
+
+2 rows selected.
+
+SQL> 
+SQL> 
+SQL> -- STEP 8	----------------------------------------------------------
+SQL> DROP TABLE      rating;
+DROP TABLE	rating
+          	*
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+SQL> CREATE TABLE    rating
+  2  (	     rating_id INT
+  3  ,	     rating_agency_id INT
+  4  ,	     rating VARCHAR(10)
+  5  ,	     description VARCHAR(420)
+  6  ,	     created_by INT
+  7  ,	     creation_date DATE
+  8  ,	     last_updated_by INT
+  9  ,	     last_update_date DATE
+ 10  ,	     CONSTRAINT pk_rating PRIMARY KEY (rating_id)
+ 11  ,	     CONSTRAINT uq_rating UNIQUE (rating_agency_id, rating)
+ 12  ,	     CONSTRAINT fk_rating_1 FOREIGN KEY (created_by) REFERENCES system_user (system_user_id)
+ 13  ,	     CONSTRAINT fk_rating_2 FOREIGN KEY (last_updated_by) REFERENCES system_user (system_user_id)
+ 14  ,	     CONSTRAINT nn_rating_1 CHECK (rating_agency_id IS NOT NULL)
+ 15  ,	     CONSTRAINT nn_rating_2 CHECK (rating IS NOT NULL)
+ 16  ,	     CONSTRAINT nn_rating_3 CHECK (description IS NOT NULL)
+ 17  ,	     CONSTRAINT nn_rating_4 CHECK (created_by IS NOT NULL)
+ 18  ,	     CONSTRAINT nn_rating_5 CHECK (creation_date IS NOT NULL)
+ 19  ,	     CONSTRAINT nn_rating_6 CHECK (last_updated_by IS NOT NULL)
+ 20  ,	     CONSTRAINT nn_rating_7 CHECK (last_update_date IS NOT NULL)
+ 21  );
+
+Table created.
+
+SQL> 
+SQL> -- STEP 9	----------------------------------------------------------
+SQL> DROP	     sequence rating_s1;
+DROP 		sequence rating_s1
+     		         *
+ERROR at line 1:
+ORA-02289: sequence does not exist 
+
+
+SQL> CREATE	     sequence rating_s1 start with 2001 increment by 1;
+
+Sequence created.
+
+SQL> @/home/student/Data/cit225/oracle/lab5/rating_inserts.sql
+SQL> --Inserting rowns to the rating table
+SQL> --INSERT ROW 1
+SQL> INSERT INTO rating
+  2  ( rating_id
+  3    ,rating_agency_id
+  4    ,rating
+  5    ,description
+  6    ,created_by
+  7    ,creation_date
+  8    ,last_updated_by
+  9    ,last_update_date)
+ 10  SELECT
+ 11  rating_s1.NEXTVAL AS rating_id
+ 12  ,rating_agency_id
+ 13  ,'PG13' AS rating
+ 14  ,'Parents strongly cautioned-Some material may be innappropiate for children under 13' AS description
+ 15  ,created_by
+ 16  ,SYSDATE AS creation_date
+ 17  ,last_updated_by
+ 18  ,SYSDATE AS last_update_date
+ 19  FROM rating_agency WHERE rating_agency_abbr='MPAA';
+
+1 row created.
+
+SQL> 
+SQL> --INSERT ROW 2
+SQL> INSERT INTO rating
+  2  ( rating_id
+  3    ,rating_agency_id
+  4    ,rating
+  5    ,description
+  6    ,created_by
+  7    ,creation_date
+  8    ,last_updated_by
+  9    ,last_update_date)
+ 10  SELECT
+ 11  rating_s1.NEXTVAL AS rating_id
+ 12  ,rating_agency_id
+ 13  ,'G' AS rating
+ 14  ,'General audiences – All ages admitted' AS description
+ 15  ,created_by
+ 16  ,SYSDATE AS creation_date
+ 17  ,last_updated_by
+ 18  ,SYSDATE AS last_update_date
+ 19  FROM rating_agency WHERE rating_agency_abbr='MPAA';
+
+1 row created.
+
+SQL> 
+SQL> --INSERT ROW 3
+SQL> INSERT INTO rating
+  2  ( rating_id
+  3    ,rating_agency_id
+  4    ,rating
+  5    ,description
+  6    ,created_by
+  7    ,creation_date
+  8    ,last_updated_by
+  9    ,last_update_date)
+ 10  SELECT
+ 11  rating_s1.NEXTVAL AS rating_id
+ 12  ,rating_agency_id
+ 13  ,'Mature' AS rating
+ 14  ,'Content that is generally suitable for persons ages 17 and up' AS description
+ 15  ,created_by
+ 16  ,SYSDATE AS creation_date
+ 17  ,last_updated_by
+ 18  ,SYSDATE AS last_update_date
+ 19  FROM rating_agency WHERE rating_agency_abbr='ESRB';
+
+1 row created.
+
+SQL> 
+SQL> 
+SQL> --INSERT ROW 4
+SQL> INSERT INTO rating
+  2  ( rating_id
+  3    ,rating_agency_id
+  4    ,rating
+  5    ,description
+  6    ,created_by
+  7    ,creation_date
+  8    ,last_updated_by
+  9    ,last_update_date)
+ 10  SELECT
+ 11  rating_s1.NEXTVAL AS rating_id
+ 12  ,rating_agency_id
+ 13  ,'Everyone' AS rating
+ 14  ,'All' AS description
+ 15  ,created_by
+ 16  ,SYSDATE AS creation_date
+ 17  ,last_updated_by
+ 18  ,SYSDATE AS last_update_date
+ 19  FROM rating_agency WHERE rating_agency_abbr='ESRB';
+
+1 row created.
+
+SQL> UPDATE	     rating
+  2  SET	     description = 'Has content that is generally suitable for all ages. May contain minimal cartoon, fantasy or mild violence and/or infrequent use of mild language'
+  3  WHERE	     rating = 'Everyone';
+
+1 row updated.
+
+SQL> 
+SQL> COL rating_id    FORMAT 9999 HEADING "Rating ID"
+SQL> COL rating       FORMAT 9999 HEADING "Rating"
+SQL> COL description  FORMAT A40  HEADING "Rating Description"
+SQL> 
+SQL> SELECT  rating_id
+  2  ,	     rating
+  3  ,	     description
+  4  FROM    rating
+  5  WHERE   rating = 'Everyone';
+
+Rating ID Rating     Rating Description                                         
+--------- ---------- ----------------------------------------                   
+     2004 Everyone   Has content that is generally suitable f                   
+                     or all ages. May contain minimal cartoon                   
+                     , fantasy or mild violence and/or infreq                   
+                     uent use of mild language                                  
+                                                                                
+
+1 row selected.
+
+SQL> 
+SQL> -- STEP 10 ----------------------------------------------------------
+SQL> ALTER TABLE     rating
+  2  ADD	     dummy INT;
+
+Table altered.
+
+SQL> 
+SQL> UPDATE	     rating
+  2  SET	     dummy=
+  3  CASE
+  4  	     WHEN    (rating_id = 2001) THEN 3001
+  5  	     WHEN    (rating_id = 2002) THEN 3002
+  6  	     ELSE    NULL
+  7  END;
+
+4 rows updated.
+
+SQL> 
+SQL> COL rating_id    FORMAT 9999 HEADING "Rating ID"
+SQL> COL rating       FORMAT 9999 HEADING "Rating"
+SQL> COL dummy	      FORMAT 9999 HEADING "Dummy column added"
+SQL> 
+SQL> SELECT  rating_id
+  2  ,	     rating
+  3  ,	     dummy
+  4  FROM    rating;
+
+Rating ID Rating     Dummy column added                                         
+--------- ---------- ------------------                                         
+     2001 PG13                     3001                                         
+     2002 G                        3002                                         
+     2003 Mature     <Null>                                                     
+     2004 Everyone   <Null>                                                     
+
+4 rows selected.
+
+SQL> 
+SQL> 
+SQL> -- ------------------------------------------------------------------
+SQL> -- Enter lab code above.
+SQL> 
+SQL> -- Close log file.
+SQL> SPOOL OFF
