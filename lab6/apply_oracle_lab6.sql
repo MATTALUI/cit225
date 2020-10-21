@@ -74,7 +74,7 @@ SELECT   table_name
 FROM     user_tab_columns
 WHERE    table_name = 'RENTAL_ITEM'
 ORDER BY 2;
-/*
+
 -- ----------------------------------------------------------------------
 --  Step #2 : Create the PRICE table.
 -- ----------------------------------------------------------------------
@@ -102,14 +102,27 @@ END;
 --  Step 1: Write the CREATE TABLE statement.
 -- --------------------------------------------------
 ---*****Addition by the student
--
+CREATE TABLE price
+(	price_id         NUMBER PRIMARY KEY
+,	item_id          NUMBER NOT NULL REFERENCES item (item_id)
+,	price_type       NUMBER REFERENCES common_lookup (common_lookup_id)
+,	active_flag      VARCHAR(1)
+,	start_date       DATE NOT NULL
+,	end_date         DATE
+,	amount           NUMBER NOT NULL
+,	created_by       NUMBER NOT NULL REFERENCES system_user (system_user_id)
+,	creation_date    DATE NOT NULL
+,	last_updated_by  NUMBER NOT NULL REFERENCES system_user (system_user_id)
+,	last_update_date DATE NOT NULL
+,	CONSTRAINT yn_price CHECK (active_flag IN ('Y', 'N'))
+);
 
 -- --------------------------------------------------
 --  Step 2: Write the CREATE SEQUENCE statement.
 -- --------------------------------------------------
 -- Create sequence. 
 ---*****Addition by the student
-
+CREATE SEQUENCE price_s1 START WITH 1001 INCREMENT BY 1;
 
 -- ----------------------------------------------------------------------
 --  Objective #2: Verify the table structure.
@@ -149,7 +162,7 @@ WHERE    uc.table_name = UPPER('price')
 AND      ucc.column_name = UPPER('active_flag')
 AND      uc.constraint_name = UPPER('yn_price')
 AND      uc.constraint_type = 'C';
-
+/*
 -- ----------------------------------------------------------------------
 --  Step #3 : Insert new data into the model.
 -- ----------------------------------------------------------------------

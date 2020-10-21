@@ -75,7 +75,7 @@ RENTAL_ITEM            9 RENTAL_ITEM_TYPE                NUMBER(22)
 
 9 rows selected.
 
-SQL> /*
+SQL> 
 SQL> -- ----------------------------------------------------------------------
 SQL> --  Step #2 : Create the PRICE table.
 SQL> -- ----------------------------------------------------------------------
@@ -86,31 +86,53 @@ SQL> -- ----------------------------------------------------------------------
 SQL> 
 SQL> -- Conditionally drop PRICE table and sequence.
 SQL> BEGIN
-SQL>   FOR i IN (SELECT null
-SQL> 		 FROM	user_tables
-SQL> 		 WHERE	table_name = 'PRICE') LOOP
-SQL> 	 EXECUTE IMMEDIATE 'DROP TABLE PRICE CASCADE CONSTRAINTS';
-SQL>   END LOOP;
-SQL>   FOR i IN (SELECT null
-SQL> 		 FROM	user_sequences
-SQL> 		 WHERE	sequence_name = 'PRICE_S1') LOOP
-SQL> 	 EXECUTE IMMEDIATE 'DROP SEQUENCE PRICE_S1';
-SQL>   END LOOP;
-SQL> END;
-SQL> /
+  2    FOR i IN (SELECT null
+  3  		 FROM	user_tables
+  4  		 WHERE	table_name = 'PRICE') LOOP
+  5  	 EXECUTE IMMEDIATE 'DROP TABLE PRICE CASCADE CONSTRAINTS';
+  6    END LOOP;
+  7    FOR i IN (SELECT null
+  8  		 FROM	user_sequences
+  9  		 WHERE	sequence_name = 'PRICE_S1') LOOP
+ 10  	 EXECUTE IMMEDIATE 'DROP SEQUENCE PRICE_S1';
+ 11    END LOOP;
+ 12  END;
+ 13  /
+
+PL/SQL procedure successfully completed.
+
 SQL> 
 SQL> -- --------------------------------------------------
 SQL> --  Step 1: Write the CREATE TABLE statement.
 SQL> -- --------------------------------------------------
 SQL> ---*****Addition by the student
-SQL> -
+SQL> CREATE TABLE price
+  2  (	     price_id	      NUMBER PRIMARY KEY
+  3  ,	     item_id	      NUMBER NOT NULL REFERENCES item (item_id)
+  4  ,	     price_type       NUMBER REFERENCES common_lookup (common_lookup_id)
+  5  ,	     active_flag      VARCHAR(1)
+  6  ,	     start_date       DATE NOT NULL
+  7  ,	     end_date	      DATE
+  8  ,	     amount	      NUMBER NOT NULL
+  9  ,	     created_by       NUMBER NOT NULL REFERENCES system_user (system_user_id)
+ 10  ,	     creation_date    DATE NOT NULL
+ 11  ,	     last_updated_by  NUMBER NOT NULL REFERENCES system_user (system_user_id)
+ 12  ,	     last_update_date DATE NOT NULL
+ 13  ,	     CONSTRAINT yn_price CHECK (active_flag IN ('Y', 'N'))
+ 14  );
+
+Table created.
+
 SQL> 
 SQL> -- --------------------------------------------------
 SQL> --  Step 2: Write the CREATE SEQUENCE statement.
 SQL> -- --------------------------------------------------
 SQL> -- Create sequence.
 SQL> ---*****Addition by the student
-SQL> 
+SQL> CREATE SEQUENCE price_s1 START WITH 1001 INCREMENT BY 1;
+
+Sequence created.
+
 SQL> 
 SQL> -- ----------------------------------------------------------------------
 SQL> --  Objective #2: Verify the table structure.
@@ -121,36 +143,61 @@ SQL> COLUMN column_id	 FORMAT 9999
 SQL> COLUMN column_name  FORMAT A22
 SQL> COLUMN data_type	 FORMAT A12
 SQL> SELECT   table_name
-SQL> ,	      column_id
-SQL> ,	      column_name
-SQL> ,	      CASE
-SQL> 		WHEN nullable = 'N' THEN 'NOT NULL'
-SQL> 		ELSE ''
-SQL> 	      END AS nullable
-SQL> ,	      CASE
-SQL> 		WHEN data_type IN ('CHAR','VARCHAR2','NUMBER') THEN
-SQL> 		  data_type||'('||data_length||')'
-SQL> 		ELSE
-SQL> 		  data_type
-SQL> 	      END AS data_type
-SQL> FROM     user_tab_columns
-SQL> WHERE    table_name = 'PRICE'
-SQL> ORDER BY 2;
+  2  ,	      column_id
+  3  ,	      column_name
+  4  ,	      CASE
+  5  		WHEN nullable = 'N' THEN 'NOT NULL'
+  6  		ELSE ''
+  7  	      END AS nullable
+  8  ,	      CASE
+  9  		WHEN data_type IN ('CHAR','VARCHAR2','NUMBER') THEN
+ 10  		  data_type||'('||data_length||')'
+ 11  		ELSE
+ 12  		  data_type
+ 13  	      END AS data_type
+ 14  FROM     user_tab_columns
+ 15  WHERE    table_name = 'PRICE'
+ 16  ORDER BY 2;
+
+                         Column                                                 
+Table Name     COLUMN_ID Name                   NULLABLE DATA_TYPE              
+-------------- --------- ---------------------- -------- ------------           
+PRICE                  1 PRICE_ID               NOT NULL NUMBER(22)             
+PRICE                  2 ITEM_ID                NOT NULL NUMBER(22)             
+PRICE                  3 PRICE_TYPE                      NUMBER(22)             
+PRICE                  4 ACTIVE_FLAG                     VARCHAR2(1)            
+PRICE                  5 START_DATE             NOT NULL DATE                   
+PRICE                  6 END_DATE                        DATE                   
+PRICE                  7 AMOUNT                 NOT NULL NUMBER(22)             
+PRICE                  8 CREATED_BY             NOT NULL NUMBER(22)             
+PRICE                  9 CREATION_DATE          NOT NULL DATE                   
+PRICE                 10 LAST_UPDATED_BY        NOT NULL NUMBER(22)             
+PRICE                 11 LAST_UPDATE_DATE       NOT NULL DATE                   
+
+11 rows selected.
+
 SQL> -- ----------------------------------------------------------------------
 SQL> --  Objective #3: Verify the table constraints.
 SQL> -- ----------------------------------------------------------------------
 SQL> COLUMN constraint_name   FORMAT A16
 SQL> COLUMN search_condition  FORMAT A30
 SQL> SELECT   uc.constraint_name
-SQL> ,	      uc.search_condition
-SQL> FROM     user_constraints uc INNER JOIN user_cons_columns ucc
-SQL> ON       uc.table_name = ucc.table_name
-SQL> AND      uc.constraint_name = ucc.constraint_name
-SQL> WHERE    uc.table_name = UPPER('price')
-SQL> AND      ucc.column_name = UPPER('active_flag')
-SQL> AND      uc.constraint_name = UPPER('yn_price')
-SQL> AND      uc.constraint_type = 'C';
-SQL> 
+  2  ,	      uc.search_condition
+  3  FROM     user_constraints uc INNER JOIN user_cons_columns ucc
+  4  ON       uc.table_name = ucc.table_name
+  5  AND      uc.constraint_name = ucc.constraint_name
+  6  WHERE    uc.table_name = UPPER('price')
+  7  AND      ucc.column_name = UPPER('active_flag')
+  8  AND      uc.constraint_name = UPPER('yn_price')
+  9  AND      uc.constraint_type = 'C';
+
+Constraint Name  SEARCH_CONDITION                                               
+---------------- ------------------------------                                 
+YN_PRICE         active_flag IN ('Y', 'N')                                      
+
+1 row selected.
+
+SQL> /*
 SQL> -- ----------------------------------------------------------------------
 SQL> --  Step #3 : Insert new data into the model.
 SQL> -- ----------------------------------------------------------------------
