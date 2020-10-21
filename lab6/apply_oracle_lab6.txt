@@ -1,0 +1,578 @@
+SQL> 
+SQL> -- Set the page size.
+SQL> SET ECHO ON
+SQL> SET PAGESIZE 999
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #1 : Add two columns to the RENTAL_ITEM table.
+SQL> -- ----------------------------------------------------------------------
+SQL> SELECT  'Step #1' AS "Step Number" FROM dual;
+
+Step Nu                                                                         
+-------                                                                         
+Step #1                                                                         
+
+1 row selected.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Objective #1: Add the RENTAL_ITEM_PRICE and RENTAL_ITEM_TYPE columns
+SQL> -- 	       to the RENTAL_ITEM table. Both columns should use a
+SQL> -- 	       NUMBER data type in Oracle, and an int unsigned data
+SQL> -- 	       type.
+SQL> -- ----------------------------------------------------------------------
+SQL> 
+SQL> -- --------------------------------------------------
+SQL> --  Step 1: Write the ALTER statement.
+SQL> -- --------------------------------------------------
+SQL> 
+SQL> ---*****Addition by the student
+SQL> ALTER TABLE     rental_item
+  2  ADD	     rental_item_price NUMBER
+  3  ADD	     rental_item_type  NUMBER
+  4  ADD CONSTRAINT  fk_rental_item_5 FOREIGN KEY (rental_item_type) REFERENCES common_lookup (common_lookup_id);
+
+Table altered.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Verification #1: Verify the table structure.
+SQL> -- ----------------------------------------------------------------------
+SQL> SET NULL ''
+SQL> COLUMN table_name	 FORMAT A14
+SQL> COLUMN column_id	 FORMAT 9999
+SQL> COLUMN column_name  FORMAT A22
+SQL> COLUMN data_type	 FORMAT A12
+SQL> SELECT   table_name
+  2  ,	      column_id
+  3  ,	      column_name
+  4  ,	      CASE
+  5  		WHEN nullable = 'N' THEN 'NOT NULL'
+  6  		ELSE ''
+  7  	      END AS nullable
+  8  ,	      CASE
+  9  		WHEN data_type IN ('CHAR','VARCHAR2','NUMBER') THEN
+ 10  		  data_type||'('||data_length||')'
+ 11  		ELSE
+ 12  		  data_type
+ 13  	      END AS data_type
+ 14  FROM     user_tab_columns
+ 15  WHERE    table_name = 'RENTAL_ITEM'
+ 16  ORDER BY 2;
+
+                         Column                                                 
+Table Name     COLUMN_ID Name                   NULLABLE DATA_TYPE              
+-------------- --------- ---------------------- -------- ------------           
+RENTAL_ITEM            1 RENTAL_ITEM_ID         NOT NULL NUMBER(22)             
+RENTAL_ITEM            2 RENTAL_ID              NOT NULL NUMBER(22)             
+RENTAL_ITEM            3 ITEM_ID                NOT NULL NUMBER(22)             
+RENTAL_ITEM            4 CREATED_BY             NOT NULL NUMBER(22)             
+RENTAL_ITEM            5 CREATION_DATE          NOT NULL DATE                   
+RENTAL_ITEM            6 LAST_UPDATED_BY        NOT NULL NUMBER(22)             
+RENTAL_ITEM            7 LAST_UPDATE_DATE       NOT NULL DATE                   
+RENTAL_ITEM            8 RENTAL_ITEM_PRICE               NUMBER(22)             
+RENTAL_ITEM            9 RENTAL_ITEM_TYPE                NUMBER(22)             
+
+9 rows selected.
+
+SQL> /*
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #2 : Create the PRICE table.
+SQL> -- ----------------------------------------------------------------------
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Objective #1: Conditionally drop a PRICE table before creating a
+SQL> -- 	       PRICE table and PRICE_S1 sequence.
+SQL> -- ----------------------------------------------------------------------
+SQL> 
+SQL> -- Conditionally drop PRICE table and sequence.
+SQL> BEGIN
+SQL>   FOR i IN (SELECT null
+SQL> 		 FROM	user_tables
+SQL> 		 WHERE	table_name = 'PRICE') LOOP
+SQL> 	 EXECUTE IMMEDIATE 'DROP TABLE PRICE CASCADE CONSTRAINTS';
+SQL>   END LOOP;
+SQL>   FOR i IN (SELECT null
+SQL> 		 FROM	user_sequences
+SQL> 		 WHERE	sequence_name = 'PRICE_S1') LOOP
+SQL> 	 EXECUTE IMMEDIATE 'DROP SEQUENCE PRICE_S1';
+SQL>   END LOOP;
+SQL> END;
+SQL> /
+SQL> 
+SQL> -- --------------------------------------------------
+SQL> --  Step 1: Write the CREATE TABLE statement.
+SQL> -- --------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> -
+SQL> 
+SQL> -- --------------------------------------------------
+SQL> --  Step 2: Write the CREATE SEQUENCE statement.
+SQL> -- --------------------------------------------------
+SQL> -- Create sequence.
+SQL> ---*****Addition by the student
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Objective #2: Verify the table structure.
+SQL> -- ----------------------------------------------------------------------
+SQL> SET NULL ''
+SQL> COLUMN table_name	 FORMAT A14
+SQL> COLUMN column_id	 FORMAT 9999
+SQL> COLUMN column_name  FORMAT A22
+SQL> COLUMN data_type	 FORMAT A12
+SQL> SELECT   table_name
+SQL> ,	      column_id
+SQL> ,	      column_name
+SQL> ,	      CASE
+SQL> 		WHEN nullable = 'N' THEN 'NOT NULL'
+SQL> 		ELSE ''
+SQL> 	      END AS nullable
+SQL> ,	      CASE
+SQL> 		WHEN data_type IN ('CHAR','VARCHAR2','NUMBER') THEN
+SQL> 		  data_type||'('||data_length||')'
+SQL> 		ELSE
+SQL> 		  data_type
+SQL> 	      END AS data_type
+SQL> FROM     user_tab_columns
+SQL> WHERE    table_name = 'PRICE'
+SQL> ORDER BY 2;
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Objective #3: Verify the table constraints.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN constraint_name   FORMAT A16
+SQL> COLUMN search_condition  FORMAT A30
+SQL> SELECT   uc.constraint_name
+SQL> ,	      uc.search_condition
+SQL> FROM     user_constraints uc INNER JOIN user_cons_columns ucc
+SQL> ON       uc.table_name = ucc.table_name
+SQL> AND      uc.constraint_name = ucc.constraint_name
+SQL> WHERE    uc.table_name = UPPER('price')
+SQL> AND      ucc.column_name = UPPER('active_flag')
+SQL> AND      uc.constraint_name = UPPER('yn_price')
+SQL> AND      uc.constraint_type = 'C';
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #3 : Insert new data into the model.
+SQL> -- ----------------------------------------------------------------------
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Objective #3: Rename ITEM_RELEASE_DATE column to RELEASE_DATE column,
+SQL> -- 	       insert three new DVD releases into the ITEM table,
+SQL> -- 	       insert three new rows in the MEMBER, CONTACT, ADDRESS,
+SQL> -- 	       STREET_ADDRESS, and TELEPHONE tables, and insert
+SQL> -- 	       three new RENTAL and RENTAL_ITEM table rows.
+SQL> -- ----------------------------------------------------------------------
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #3a: Rename ITEM_RELEASE_DATE Column.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Verification #3a: Verify the column name change.
+SQL> -- ----------------------------------------------------------------------
+SQL> SET NULL ''
+SQL> COLUMN table_name	 FORMAT A14
+SQL> COLUMN column_id	 FORMAT 9999
+SQL> COLUMN column_name  FORMAT A22
+SQL> COLUMN data_type	 FORMAT A12
+SQL> SELECT   table_name
+SQL> ,	      column_id
+SQL> ,	      column_name
+SQL> ,	      CASE
+SQL> 		WHEN nullable = 'N' THEN 'NOT NULL'
+SQL> 		ELSE ''
+SQL> 	      END AS nullable
+SQL> ,	      data_type
+SQL> ||      '('||data_length||')' AS data_type
+SQL> FROM     user_tab_columns
+SQL> WHERE    TABLE_NAME = 'ITEM'
+SQL> ORDER BY 2;
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #3b: Insert three rows in the ITEM table.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Verification #3b: Verify the column name change.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN item_title FORMAT A14
+SQL> COLUMN today FORMAT A10
+SQL> COLUMN release_date FORMAT A10 HEADING "RELEASE|DATE"
+SQL> SELECT   i.item_title
+SQL> ,	      SYSDATE AS today
+SQL> ,	      i.release_date
+SQL> FROM     item i
+SQL> WHERE   (SYSDATE - i.release_date) < 31;
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #3c: Insert three new rows in the MEMBER, CONTACT, ADDRESS,
+SQL> -- 	   STREET_ADDRESS, and TELEPHONE tables.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Verification #3c: Verify the three new CONTACTS and their related
+SQL> -- 		   information set.
+SQL> -- ----------------------------------------------------------------------
+SQL> SET NULL ''
+SQL> COLUMN full_name FORMAT A20
+SQL> COLUMN city      FORMAT A10
+SQL> COLUMN state     FORMAT A10
+SQL> SELECT   c.last_name || ', ' || c.first_name AS full_name
+SQL> ,	      a.city
+SQL> ,	      a.state_province AS state
+SQL> FROM     member m INNER JOIN contact c
+SQL> ON       m.member_id = c.member_id INNER JOIN address a
+SQL> ON       c.contact_id = a.contact_id INNER JOIN street_address sa
+SQL> ON       a.address_id = sa.address_id INNER JOIN telephone t
+SQL> ON       c.contact_id = t.contact_id
+SQL> WHERE    c.last_name = 'Potter';
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #3d: Insert three new RENTAL and RENTAL_ITEM table rows..
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Verification #3d: Verify the three new CONTACTS and their related
+SQL> -- 		   information set.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN full_name	FORMAT A18
+SQL> COLUMN rental_id	FORMAT 9999
+SQL> COLUMN rental_days FORMAT A14
+SQL> COLUMN rentals	FORMAT 9999
+SQL> COLUMN items	FORMAT 9999
+SQL> SELECT   c.last_name||', '||c.first_name||' '||c.middle_name AS full_name
+SQL> ,	      r.rental_id
+SQL> ,	     (r.return_date - r.check_out_date) || '-DAY RENTAL' AS rental_days
+SQL> ,	      COUNT(DISTINCT r.rental_id) AS rentals
+SQL> ,	      COUNT(ri.rental_item_id) AS items
+SQL> FROM     rental r INNER JOIN rental_item ri
+SQL> ON       r.rental_id = ri.rental_id INNER JOIN contact c
+SQL> ON       r.customer_id = c.contact_id
+SQL> WHERE   (SYSDATE - r.check_out_date) < 15
+SQL> AND      c.last_name = 'Potter'
+SQL> GROUP BY c.last_name||', '||c.first_name||' '||c.middle_name
+SQL> ,	      r.rental_id
+SQL> ,	     (r.return_date - r.check_out_date) || '-DAY RENTAL'
+SQL> ORDER BY 2;
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Objective #4: Modify the design of the COMMON_LOOKUP table, insert
+SQL> -- 	       new data into the model, and update old non-compliant
+SQL> -- 	       design data in the model.
+SQL> -- ----------------------------------------------------------------------
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4a: Drop Indexes.
+SQL> -- ----------------------------------------------------------------------
+SQL> 
+SQL> ---*****Addition by the student
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Verification #4a: Verify the unique indexes are dropped.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN table_name FORMAT A14
+SQL> COLUMN index_name FORMAT A20
+SQL> SELECT   table_name
+SQL> ,	      index_name
+SQL> FROM     user_indexes
+SQL> WHERE    table_name = 'COMMON_LOOKUP';
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4b: Add three new columns.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Verification #4b: Verify the unique indexes are dropped.
+SQL> -- ----------------------------------------------------------------------
+SQL> SET NULL ''
+SQL> COLUMN table_name	 FORMAT A14
+SQL> COLUMN column_id	 FORMAT 9999
+SQL> COLUMN column_name  FORMAT A22
+SQL> COLUMN data_type	 FORMAT A12
+SQL> SELECT   table_name
+SQL> ,	      column_id
+SQL> ,	      column_name
+SQL> ,	      CASE
+SQL> 		WHEN nullable = 'N' THEN 'NOT NULL'
+SQL> 		ELSE ''
+SQL> 	      END AS nullable
+SQL> ,	      CASE
+SQL> 		WHEN data_type IN ('CHAR','VARCHAR2','NUMBER') THEN
+SQL> 		  data_type||'('||data_length||')'
+SQL> 		ELSE
+SQL> 		  data_type
+SQL> 	      END AS data_type
+SQL> FROM     user_tab_columns
+SQL> WHERE    table_name = 'COMMON_LOOKUP'
+SQL> ORDER BY 2;
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c: Migrate data subject to re-engineered COMMON_LOOKUP table.
+SQL> -- ----------------------------------------------------------------------
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(1): Query the pre-change state of the table.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN common_lookup_context  FORMAT A14  HEADING "Common|Lookup Context"
+SQL> COLUMN common_lookup_table    FORMAT A12  HEADING "Common|Lookup Table"
+SQL> COLUMN common_lookup_column   FORMAT A18  HEADING "Common|Lookup Column"
+SQL> COLUMN common_lookup_type	   FORMAT A18  HEADING "Common|Lookup Type"
+SQL> SELECT   common_lookup_context
+SQL> ,	      common_lookup_table
+SQL> ,	      common_lookup_column
+SQL> ,	      common_lookup_type
+SQL> FROM     common_lookup
+SQL> ORDER BY 1, 2, 3;
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Query the post COMMON_LOOKUP_COLUMN change.
+SQL> -- ----------------------------------------------------------------------
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Update the type records.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Verify update of the type records.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN common_lookup_context  FORMAT A14  HEADING "Common|Lookup Context"
+SQL> COLUMN common_lookup_table    FORMAT A12  HEADING "Common|Lookup Table"
+SQL> COLUMN common_lookup_column   FORMAT A18  HEADING "Common|Lookup Column"
+SQL> COLUMN common_lookup_type	   FORMAT A18  HEADING "Common|Lookup Type"
+SQL> SELECT   common_lookup_context
+SQL> ,	      common_lookup_table
+SQL> ,	      common_lookup_column
+SQL> ,	      common_lookup_type
+SQL> FROM     common_lookup
+SQL> WHERE    common_lookup_table IN
+SQL> 	       (SELECT table_name
+SQL> 		FROM   user_tables)
+SQL> ORDER BY 1, 2, 3;
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Query the post COMMON_LOOKUP_COLUMN change.
+SQL> -- ----------------------------------------------------------------------
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Update the ADDRESS table type records.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Verify update of the ADDRESS table type records.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN common_lookup_context  FORMAT A14  HEADING "Common|Lookup Context"
+SQL> COLUMN common_lookup_table    FORMAT A12  HEADING "Common|Lookup Table"
+SQL> COLUMN common_lookup_column   FORMAT A18  HEADING "Common|Lookup Column"
+SQL> COLUMN common_lookup_type	   FORMAT A18  HEADING "Common|Lookup Type"
+SQL> SELECT   common_lookup_context
+SQL> ,	      common_lookup_table
+SQL> ,	      common_lookup_column
+SQL> ,	      common_lookup_type
+SQL> FROM     common_lookup
+SQL> WHERE    common_lookup_table IN
+SQL> 	       (SELECT table_name
+SQL> 		FROM   user_tables)
+SQL> ORDER BY 1, 2, 3;
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(5): Query the post COMMON_LOOKUP_COLUMN change.
+SQL> -- ----------------------------------------------------------------------
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Alter the table and remove the unused column.
+SQL> -- ----------------------------------------------------------------------
+SQL> 
+SQL> ---*****Addition by the student
+SQL> 
+SQL> -- Drop the extraneous column
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Verify modification of table structure.
+SQL> -- ----------------------------------------------------------------------
+SQL> SET NULL ''
+SQL> COLUMN table_name	 FORMAT A14
+SQL> COLUMN column_id	 FORMAT 9999
+SQL> COLUMN column_name  FORMAT A22
+SQL> COLUMN data_type	 FORMAT A12
+SQL> SELECT   table_name
+SQL> ,	      column_id
+SQL> ,	      column_name
+SQL> ,	      CASE
+SQL> 		WHEN nullable = 'N' THEN 'NOT NULL'
+SQL> 		ELSE ''
+SQL> 	      END AS nullable
+SQL> ,	      CASE
+SQL> 		WHEN data_type IN ('CHAR','VARCHAR2','NUMBER') THEN
+SQL> 		  data_type||'('||data_length||')'
+SQL> 		ELSE
+SQL> 		  data_type
+SQL> 	      END AS data_type
+SQL> FROM     user_tab_columns
+SQL> WHERE    table_name = 'COMMON_LOOKUP'
+SQL> ORDER BY 2;
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(6): Insert new rows for the TELEPHONE table.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> -- Insert new rows.
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(6): Verify insert of new rows to the TELEPHONE table.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN common_lookup_table    FORMAT A12  HEADING "Common|Lookup Table"
+SQL> COLUMN common_lookup_column   FORMAT A18  HEADING "Common|Lookup Column"
+SQL> COLUMN common_lookup_type	   FORMAT A18  HEADING "Common|Lookup Type"
+SQL> SELECT   common_lookup_table
+SQL> ,	      common_lookup_column
+SQL> ,	      common_lookup_type
+SQL> FROM     common_lookup
+SQL> WHERE    common_lookup_table IN
+SQL> 	       (SELECT table_name
+SQL> 		FROM   user_tables)
+SQL> ORDER BY 1, 2, 3;
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4d: Alter the table structure.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> -- Add NOT NULL constraints to the new
+SQL> -- columns.
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4d: Verify changes to the table structure.
+SQL> -- ----------------------------------------------------------------------
+SQL> SET NULL ''
+SQL> COLUMN table_name	 FORMAT A14
+SQL> COLUMN column_id	 FORMAT 9999
+SQL> COLUMN column_name  FORMAT A22
+SQL> COLUMN data_type	 FORMAT A12
+SQL> SELECT   table_name
+SQL> ,	      column_id
+SQL> ,	      column_name
+SQL> ,	      CASE
+SQL> 		WHEN nullable = 'N' THEN 'NOT NULL'
+SQL> 		ELSE ''
+SQL> 	      END AS nullable
+SQL> ,	      CASE
+SQL> 		WHEN data_type IN ('CHAR','VARCHAR2','NUMBER') THEN
+SQL> 		  data_type||'('||data_length||')'
+SQL> 		ELSE
+SQL> 		  data_type
+SQL> 	      END AS data_type
+SQL> FROM     user_tab_columns
+SQL> WHERE    table_name = 'COMMON_LOOKUP'
+SQL> ORDER BY 2;
+SQL> 
+SQL> -- Display non-unique constraints.
+SQL> COLUMN constraint_name   FORMAT A22  HEADING "Constraint Name"
+SQL> COLUMN search_condition  FORMAT A36  HEADING "Search Condition"
+SQL> COLUMN constraint_type   FORMAT A10  HEADING "Constraint|Type"
+SQL> SELECT   uc.constraint_name
+SQL> ,	      uc.search_condition
+SQL> ,	      uc.constraint_type
+SQL> FROM     user_constraints uc INNER JOIN user_cons_columns ucc
+SQL> ON       uc.table_name = ucc.table_name
+SQL> AND      uc.constraint_name = ucc.constraint_name
+SQL> WHERE    uc.table_name = UPPER('common_lookup')
+SQL> AND      uc.constraint_type IN (UPPER('c'),UPPER('p'))
+SQL> ORDER BY uc.constraint_type DESC
+SQL> ,	      uc.constraint_name;
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4d: Add unique index.
+SQL> -- ----------------------------------------------------------------------
+SQL> 
+SQL> ---*****Addition by the student
+SQL> 	     -- Add unique constraint on the natural key of the COMMON_LOOKUP table.
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4d: Verify new unique index.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN sequence_name   FORMAT A22 HEADING "Sequence Name"
+SQL> COLUMN column_position FORMAT 999 HEADING "Column|Position"
+SQL> COLUMN column_name     FORMAT A22 HEADING "Column|Name"
+SQL> SELECT   ui.index_name
+SQL> ,	      uic.column_position
+SQL> ,	      uic.column_name
+SQL> FROM     user_indexes ui INNER JOIN user_ind_columns uic
+SQL> ON       ui.index_name = uic.index_name
+SQL> AND      ui.table_name = uic.table_name
+SQL> WHERE    ui.table_name = UPPER('common_lookup')
+SQL> ORDER BY ui.index_name
+SQL> ,	      uic.column_position;
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --      Step #4d: Update the foreign keys of the TELEPHONE table.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> -- Fix obsoleted FOREIGN KEY values.
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4d: Verify the foreign keys of the TELEPHONE table.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN common_lookup_table  FORMAT A14 HEADING "Common|Lookup Table"
+SQL> COLUMN common_lookup_column FORMAT A14 HEADING "Common|Lookup Column"
+SQL> COLUMN common_lookup_type	 FORMAT A8  HEADING "Common|Lookup|Type"
+SQL> COLUMN count_dependent	 FORMAT 999 HEADING "Count of|Foreign|Keys"
+SQL> COLUMN count_lookup	 FORMAT 999 HEADING "Count of|Primary|Keys"
+SQL> SELECT   cl.common_lookup_table
+SQL> ,	      cl.common_lookup_column
+SQL> ,	      cl.common_lookup_type
+SQL> ,	      COUNT(a.address_id) AS count_dependent
+SQL> ,	      COUNT(DISTINCT cl.common_lookup_table) AS count_lookup
+SQL> FROM     address a RIGHT JOIN common_lookup cl
+SQL> ON       a.address_type = cl.common_lookup_id
+SQL> WHERE    cl.common_lookup_table = 'ADDRESS'
+SQL> AND      cl.common_lookup_column = 'ADDRESS_TYPE'
+SQL> AND      cl.common_lookup_type IN ('HOME','WORK')
+SQL> GROUP BY cl.common_lookup_table
+SQL> ,	      cl.common_lookup_column
+SQL> ,	      cl.common_lookup_type
+SQL> UNION
+SQL> SELECT   cl.common_lookup_table
+SQL> ,	      cl.common_lookup_column
+SQL> ,	      cl.common_lookup_type
+SQL> ,	      COUNT(t.telephone_id) AS count_dependent
+SQL> ,	      COUNT(DISTINCT cl.common_lookup_table) AS count_lookup
+SQL> FROM     telephone t RIGHT JOIN common_lookup cl
+SQL> ON       t.telephone_type = cl.common_lookup_id
+SQL> WHERE    cl.common_lookup_table = 'TELEPHONE'
+SQL> AND      cl.common_lookup_column = 'TELEPHONE_TYPE'
+SQL> AND      cl.common_lookup_type IN ('HOME','WORK')
+SQL> GROUP BY cl.common_lookup_table
+SQL> ,	      cl.common_lookup_column
+SQL> ,	      cl.common_lookup_type;
+SQL> */
+SQL> SPOOL OFF

@@ -45,6 +45,10 @@ SELECT  'Step #1' AS "Step Number" FROM dual;
 -- --------------------------------------------------
 
 ---*****Addition by the student
+ALTER TABLE	rental_item
+ADD		rental_item_price NUMBER
+ADD		rental_item_type  NUMBER
+ADD CONSTRAINT	fk_rental_item_5 FOREIGN KEY (rental_item_type) REFERENCES common_lookup (common_lookup_id);
 
 -- ----------------------------------------------------------------------
 --  Verification #1: Verify the table structure.
@@ -70,7 +74,7 @@ SELECT   table_name
 FROM     user_tab_columns
 WHERE    table_name = 'RENTAL_ITEM'
 ORDER BY 2;
-
+/*
 -- ----------------------------------------------------------------------
 --  Step #2 : Create the PRICE table.
 -- ----------------------------------------------------------------------
@@ -569,5 +573,5 @@ AND      cl.common_lookup_type IN ('HOME','WORK')
 GROUP BY cl.common_lookup_table
 ,        cl.common_lookup_column
 ,        cl.common_lookup_type;
-
+*/
 SPOOL OFF
