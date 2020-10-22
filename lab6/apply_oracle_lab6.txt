@@ -564,7 +564,7 @@ SQL> INSERT INTO contact VALUES
   5    FROM	common_lookup
   6    WHERE	common_lookup_context = 'CONTACT'
   7    AND	common_lookup_type = 'CUSTOMER')
-  8  ,'Lilly','Luna','Potter'
+  8  ,'Lily','Luna','Potter'
   9  , 1002, SYSDATE, 1002, SYSDATE);
 
 1 row created.
@@ -628,7 +628,7 @@ Name
 -------------------- ---------- ----------                                      
 Potter, Harry        Provo      Utah                                            
 Potter, Ginny        Provo      Utah                                            
-Potter, Lilly        Provo      Utah                                            
+Potter, Lily         Provo      Utah                                            
 
 3 rows selected.
 
@@ -709,9 +709,102 @@ SQL> INSERT INTO rental_item
 
 1 row created.
 
-SQL> -- Ginny's Rentals
-SQL> -- Lily's Rentals
 SQL> 
+SQL> -- Ginny's Rentals
+SQL> INSERT INTO rental
+  2  (	     rental_id
+  3  ,	     customer_id
+  4  ,	     check_out_date
+  5  ,	     return_date
+  6  ,	     created_by
+  7  ,	     creation_date
+  8  ,	     last_updated_by
+  9  ,	     last_update_date)
+ 10  VALUES
+ 11  (	     rental_s1.nextval
+ 12  ,	     (SELECT contact_id FROM contact WHERE last_name = 'Potter' AND first_name = 'Ginny')
+ 13  ,	     TRUNC(SYSDATE)
+ 14  ,	     TRUNC(SYSDATE) + 3
+ 15  ,	     1002
+ 16  ,	     SYSDATE
+ 17  ,	     1002
+ 18  ,	     SYSDATE);
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO rental_item
+  2  (	     rental_item_id
+  3  ,	     rental_id
+  4  ,	     item_id
+  5  ,	     created_by
+  6  ,	     creation_date
+  7  ,	     last_updated_by
+  8  ,	     last_update_date
+  9  ,	     rental_item_type
+ 10  ,	     rental_item_price
+ 11  )
+ 12  VALUES
+ 13  (	     rental_item_s1.nextval
+ 14  ,	     rental_s1.currval
+ 15  ,	     (SELECT d.item_id FROM item d, common_lookup cl WHERE d.item_title = 'Taken' AND d.item_type = cl.common_lookup_id AND cl.common_lookup_type = 'DVD_WIDE_SCREEN')
+ 16  ,	     1002
+ 17  ,	     SYSDATE
+ 18  ,	     1002
+ 19  ,	     SYSDATE
+ 20  ,	     NULL
+ 21  ,	     NULL);
+
+1 row created.
+
+SQL> 
+SQL> -- Lily's Rentals
+SQL> INSERT INTO rental
+  2  (	     rental_id
+  3  ,	     customer_id
+  4  ,	     check_out_date
+  5  ,	     return_date
+  6  ,	     created_by
+  7  ,	     creation_date
+  8  ,	     last_updated_by
+  9  ,	     last_update_date)
+ 10  VALUES
+ 11  (	     rental_s1.nextval
+ 12  ,	     (SELECT contact_id FROM contact WHERE last_name = 'Potter' AND middle_name = 'Luna' AND first_name = 'Lily')
+ 13  ,	     TRUNC(SYSDATE)
+ 14  ,	     TRUNC(SYSDATE) + 5
+ 15  ,	     1002
+ 16  ,	     SYSDATE
+ 17  ,	     1002
+ 18  ,	     SYSDATE);
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO rental_item
+  2  (	     rental_item_id
+  3  ,	     rental_id
+  4  ,	     item_id
+  5  ,	     created_by
+  6  ,	     creation_date
+  7  ,	     last_updated_by
+  8  ,	     last_update_date
+  9  ,	     rental_item_type
+ 10  ,	     rental_item_price
+ 11  )
+ 12  VALUES
+ 13  (	     rental_item_s1.nextval
+ 14  ,	     rental_s1.currval
+ 15  ,	     (SELECT d.item_id FROM item d, common_lookup cl WHERE d.item_title = 'Finding Faith in Christ' AND d.item_subtitle = 'LDS' AND d.item_type = cl.common_lookup_id AND cl.common_lookup_type = 'DVD_WIDE_SCREEN')
+ 16  ,	     1002
+ 17  ,	     SYSDATE
+ 18  ,	     1002
+ 19  ,	     SYSDATE
+ 20  ,	     NULL
+ 21  ,	     NULL);
+
+1 row created.
+
 SQL> 
 SQL> 
 SQL> 
@@ -743,8 +836,10 @@ Name                Rent
 (Last, First MI)    ID # RENTAL_DAYS    RENTALS ITEMS                           
 ------------------ ----- -------------- ------- -----                           
 Potter, Harry       1006 1-DAY RENTAL         1     2                           
+Potter, Ginny       1007 3-DAY RENTAL         1     1                           
+Potter, Lily Luna   1008 5-DAY RENTAL         1     1                           
 
-1 row selected.
+3 rows selected.
 
 SQL> 
 SQL> SPOOL OFF

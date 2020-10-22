@@ -454,7 +454,7 @@ INSERT INTO contact VALUES
   FROM     common_lookup
   WHERE    common_lookup_context = 'CONTACT'
   AND      common_lookup_type = 'CUSTOMER')
-,'Lilly','Luna','Potter'
+,'Lily','Luna','Potter'
 , 1002, SYSDATE, 1002, SYSDATE);
 
 INSERT INTO address VALUES
@@ -568,9 +568,90 @@ VALUES
 ,	SYSDATE
 ,	NULL
 ,	NULL);
--- Ginny's Rentals
--- Lily's Rentals
 
+-- Ginny's Rentals
+INSERT INTO rental
+(	rental_id
+,	customer_id
+,	check_out_date
+,	return_date
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date)
+VALUES
+(	rental_s1.nextval
+,	(SELECT contact_id FROM contact WHERE last_name = 'Potter' AND first_name = 'Ginny')
+,	TRUNC(SYSDATE)
+,	TRUNC(SYSDATE) + 3
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE);
+
+INSERT INTO rental_item
+(	rental_item_id
+,	rental_id
+,	item_id
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	rental_item_type
+,	rental_item_price
+)
+VALUES
+(	rental_item_s1.nextval
+,	rental_s1.currval
+,	(SELECT d.item_id FROM item d, common_lookup cl WHERE d.item_title = 'Taken' AND d.item_type = cl.common_lookup_id AND cl.common_lookup_type = 'DVD_WIDE_SCREEN')
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	NULL
+,	NULL);
+
+-- Lily's Rentals
+INSERT INTO rental
+(	rental_id
+,	customer_id
+,	check_out_date
+,	return_date
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date)
+VALUES
+(	rental_s1.nextval
+,	(SELECT contact_id FROM contact WHERE last_name = 'Potter' AND middle_name = 'Luna' AND first_name = 'Lily')
+,	TRUNC(SYSDATE)
+,	TRUNC(SYSDATE) + 5
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE);
+
+INSERT INTO rental_item
+(	rental_item_id
+,	rental_id
+,	item_id
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	rental_item_type
+,	rental_item_price
+)
+VALUES
+(	rental_item_s1.nextval
+,	rental_s1.currval
+,	(SELECT d.item_id FROM item d, common_lookup cl WHERE d.item_title = 'Finding Faith in Christ' AND d.item_subtitle = 'LDS' AND d.item_type = cl.common_lookup_id AND cl.common_lookup_type = 'DVD_WIDE_SCREEN')
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	NULL
+,	NULL);
 
 
 
