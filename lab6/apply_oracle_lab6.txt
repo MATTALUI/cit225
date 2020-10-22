@@ -842,4 +842,665 @@ Potter, Lily Luna   1008 5-DAY RENTAL         1     1
 3 rows selected.
 
 SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Objective #4: Modify the design of the COMMON_LOOKUP table, insert
+SQL> -- 	       new data into the model, and update old non-compliant
+SQL> -- 	       design data in the model.
+SQL> -- ----------------------------------------------------------------------
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4a: Drop Indexes.
+SQL> -- ----------------------------------------------------------------------
+SQL> 
+SQL> ---*****Addition by the student
+SQL> DROP INDEX COMMON_LOOKUP_N1;
+
+Index dropped.
+
+SQL> DROP INDEX COMMON_LOOKUP_U2;
+
+Index dropped.
+
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Verification #4a: Verify the unique indexes are dropped.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN table_name FORMAT A14
+SQL> COLUMN index_name FORMAT A20
+SQL> SELECT   table_name
+  2  ,	      index_name
+  3  FROM     user_indexes
+  4  WHERE    table_name = 'COMMON_LOOKUP';
+
+Table Name     Index Name                                                       
+-------------- --------------------                                             
+COMMON_LOOKUP  PK_CLOOKUP_1                                                     
+
+1 row selected.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4b: Add three new columns.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> ALTER TABLE common_lookup
+  2  ADD common_lookup_table  VARCHAR(30)
+  3  ADD common_lookup_column VARCHAR(30)
+  4  ADD common_lookup_code   VARCHAR(30);
+
+Table altered.
+
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Verification #4b: Verify the unique indexes are dropped.
+SQL> -- ----------------------------------------------------------------------
+SQL> SET NULL ''
+SQL> COLUMN table_name	 FORMAT A14
+SQL> COLUMN column_id	 FORMAT 9999
+SQL> COLUMN column_name  FORMAT A22
+SQL> COLUMN data_type	 FORMAT A12
+SQL> SELECT   table_name
+  2  ,	      column_id
+  3  ,	      column_name
+  4  ,	      CASE
+  5  		WHEN nullable = 'N' THEN 'NOT NULL'
+  6  		ELSE ''
+  7  	      END AS nullable
+  8  ,	      CASE
+  9  		WHEN data_type IN ('CHAR','VARCHAR2','NUMBER') THEN
+ 10  		  data_type||'('||data_length||')'
+ 11  		ELSE
+ 12  		  data_type
+ 13  	      END AS data_type
+ 14  FROM     user_tab_columns
+ 15  WHERE    table_name = 'COMMON_LOOKUP'
+ 16  ORDER BY 2;
+
+                         Column                                                 
+Table Name     COLUMN_ID Name                   NULLABLE DATA_TYPE              
+-------------- --------- ---------------------- -------- ------------           
+COMMON_LOOKUP          1 COMMON_LOOKUP_ID       NOT NULL NUMBER(22)             
+COMMON_LOOKUP          2 COMMON_LOOKUP_CONTEXT  NOT NULL VARCHAR2(30)           
+COMMON_LOOKUP          3 COMMON_LOOKUP_TYPE     NOT NULL VARCHAR2(30)           
+COMMON_LOOKUP          4 COMMON_LOOKUP_MEANING  NOT NULL VARCHAR2(30)           
+COMMON_LOOKUP          5 CREATED_BY             NOT NULL NUMBER(22)             
+COMMON_LOOKUP          6 CREATION_DATE          NOT NULL DATE                   
+COMMON_LOOKUP          7 LAST_UPDATED_BY        NOT NULL NUMBER(22)             
+COMMON_LOOKUP          8 LAST_UPDATE_DATE       NOT NULL DATE                   
+COMMON_LOOKUP          9 COMMON_LOOKUP_TABLE             VARCHAR2(30)           
+COMMON_LOOKUP         10 COMMON_LOOKUP_COLUMN            VARCHAR2(30)           
+COMMON_LOOKUP         11 COMMON_LOOKUP_CODE              VARCHAR2(30)           
+
+11 rows selected.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c: Migrate data subject to re-engineered COMMON_LOOKUP table.
+SQL> -- ----------------------------------------------------------------------
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(1): Query the pre-change state of the table.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN common_lookup_context  FORMAT A14  HEADING "Common|Lookup Context"
+SQL> COLUMN common_lookup_table    FORMAT A12  HEADING "Common|Lookup Table"
+SQL> COLUMN common_lookup_column   FORMAT A18  HEADING "Common|Lookup Column"
+SQL> COLUMN common_lookup_type	   FORMAT A18  HEADING "Common|Lookup Type"
+SQL> SELECT   common_lookup_context
+  2  ,	      common_lookup_table
+  3  ,	      common_lookup_column
+  4  ,	      common_lookup_type
+  5  FROM     common_lookup
+  6  ORDER BY 1, 2, 3;
+
+Common         Common       Common             Common                           
+Lookup Context Lookup Table Lookup Column      Lookup Type                      
+-------------- ------------ ------------------ ------------------               
+CONTACT                                        EMPLOYEE                         
+CONTACT                                        CUSTOMER                         
+ITEM                                           DVD_WIDE_SCREEN                  
+ITEM                                           NINTENDO_GAMECUBE                
+ITEM                                           BLU-RAY                          
+ITEM                                           PLAYSTATION2                     
+ITEM                                           DVD_FULL_SCREEN                  
+ITEM                                           XBOX                             
+MEMBER                                         VISA_CARD                        
+MEMBER                                         MASTER_CARD                      
+MEMBER                                         GROUP                            
+MEMBER                                         INDIVIDUAL                       
+MEMBER                                         DISCOVER_CARD                    
+MULTIPLE                                       WORK                             
+MULTIPLE                                       HOME                             
+SYSTEM_USER                                    INDIVIDUAL                       
+SYSTEM_USER                                    COST_CENTER                      
+SYSTEM_USER                                    SYSTEM_GROUP                     
+SYSTEM_USER                                    DBA                              
+SYSTEM_USER                                    SYSTEM_ADMIN                     
+
+20 rows selected.
+
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Query the post COMMON_LOOKUP_COLUMN change.
+SQL> -- ----------------------------------------------------------------------
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Update the type records.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> UPDATE  common_lookup
+  2  SET     common_lookup_table = 'SYSTEM_USER'
+  3  ,	     common_lookup_column = 'SYSTEM_USER_TYPE'
+  4  WHERE   common_lookup_context = 'SYSTEM_USER';
+
+5 rows updated.
+
+SQL> 
+SQL> UPDATE  common_lookup
+  2  SET     common_lookup_table = 'CONTACT'
+  3  ,	     common_lookup_column = 'CONTACT_TYPE'
+  4  WHERE   common_lookup_context = 'CONTACT';
+
+2 rows updated.
+
+SQL> 
+SQL> UPDATE  common_lookup
+  2  SET     common_lookup_table = 'MEMBER'
+  3  ,	     common_lookup_column = 'MEMBER_TYPE'
+  4  WHERE   common_lookup_context = 'MEMBER'
+  5  AND     common_lookup_type IN ('INDIVIDUAL', 'GROUP', 'DISCOVER_CARD', 'MASTER_CARD', 'VISA_CARD');
+
+5 rows updated.
+
+SQL> 
+SQL> 
+SQL> UPDATE  common_lookup
+  2  SET     common_lookup_table = 'ITEM'
+  3  ,	     common_lookup_column = 'ITEM_TYPE'
+  4  WHERE   common_lookup_context = 'ITEM';
+
+6 rows updated.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Verify update of the type records.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN common_lookup_context  FORMAT A14  HEADING "Common|Lookup Context"
+SQL> COLUMN common_lookup_table    FORMAT A12  HEADING "Common|Lookup Table"
+SQL> COLUMN common_lookup_column   FORMAT A18  HEADING "Common|Lookup Column"
+SQL> COLUMN common_lookup_type	   FORMAT A18  HEADING "Common|Lookup Type"
+SQL> SELECT   common_lookup_context
+  2  ,	      common_lookup_table
+  3  ,	      common_lookup_column
+  4  ,	      common_lookup_type
+  5  FROM     common_lookup
+  6  WHERE    common_lookup_table IN
+  7  	       (SELECT table_name
+  8  		FROM   user_tables)
+  9  ORDER BY 1, 2, 3;
+
+Common         Common       Common             Common                           
+Lookup Context Lookup Table Lookup Column      Lookup Type                      
+-------------- ------------ ------------------ ------------------               
+CONTACT        CONTACT      CONTACT_TYPE       EMPLOYEE                         
+CONTACT        CONTACT      CONTACT_TYPE       CUSTOMER                         
+ITEM           ITEM         ITEM_TYPE          DVD_WIDE_SCREEN                  
+ITEM           ITEM         ITEM_TYPE          NINTENDO_GAMECUBE                
+ITEM           ITEM         ITEM_TYPE          PLAYSTATION2                     
+ITEM           ITEM         ITEM_TYPE          BLU-RAY                          
+ITEM           ITEM         ITEM_TYPE          DVD_FULL_SCREEN                  
+ITEM           ITEM         ITEM_TYPE          XBOX                             
+MEMBER         MEMBER       MEMBER_TYPE        VISA_CARD                        
+MEMBER         MEMBER       MEMBER_TYPE        MASTER_CARD                      
+MEMBER         MEMBER       MEMBER_TYPE        DISCOVER_CARD                    
+MEMBER         MEMBER       MEMBER_TYPE        INDIVIDUAL                       
+MEMBER         MEMBER       MEMBER_TYPE        GROUP                            
+SYSTEM_USER    SYSTEM_USER  SYSTEM_USER_TYPE   COST_CENTER                      
+SYSTEM_USER    SYSTEM_USER  SYSTEM_USER_TYPE   SYSTEM_GROUP                     
+SYSTEM_USER    SYSTEM_USER  SYSTEM_USER_TYPE   DBA                              
+SYSTEM_USER    SYSTEM_USER  SYSTEM_USER_TYPE   SYSTEM_ADMIN                     
+SYSTEM_USER    SYSTEM_USER  SYSTEM_USER_TYPE   INDIVIDUAL                       
+
+18 rows selected.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Query the post COMMON_LOOKUP_COLUMN change.
+SQL> -- ----------------------------------------------------------------------
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Update the ADDRESS table type records.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> UPDATE  common_lookup
+  2  SET     common_lookup_table = 'ADDRESS'
+  3  ,	     common_lookup_column = 'ADRESS_TYPE'
+  4  WHERE   common_lookup_context = 'MULTIPLE';
+
+2 rows updated.
+
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Verify update of the ADDRESS table type records.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN common_lookup_context  FORMAT A14  HEADING "Common|Lookup Context"
+SQL> COLUMN common_lookup_table    FORMAT A12  HEADING "Common|Lookup Table"
+SQL> COLUMN common_lookup_column   FORMAT A18  HEADING "Common|Lookup Column"
+SQL> COLUMN common_lookup_type	   FORMAT A18  HEADING "Common|Lookup Type"
+SQL> SELECT   common_lookup_context
+  2  ,	      common_lookup_table
+  3  ,	      common_lookup_column
+  4  ,	      common_lookup_type
+  5  FROM     common_lookup
+  6  WHERE    common_lookup_table IN
+  7  	       (SELECT table_name
+  8  		FROM   user_tables)
+  9  ORDER BY 1, 2, 3;
+
+Common         Common       Common             Common                           
+Lookup Context Lookup Table Lookup Column      Lookup Type                      
+-------------- ------------ ------------------ ------------------               
+CONTACT        CONTACT      CONTACT_TYPE       EMPLOYEE                         
+CONTACT        CONTACT      CONTACT_TYPE       CUSTOMER                         
+ITEM           ITEM         ITEM_TYPE          DVD_WIDE_SCREEN                  
+ITEM           ITEM         ITEM_TYPE          NINTENDO_GAMECUBE                
+ITEM           ITEM         ITEM_TYPE          BLU-RAY                          
+ITEM           ITEM         ITEM_TYPE          PLAYSTATION2                     
+ITEM           ITEM         ITEM_TYPE          DVD_FULL_SCREEN                  
+ITEM           ITEM         ITEM_TYPE          XBOX                             
+MEMBER         MEMBER       MEMBER_TYPE        VISA_CARD                        
+MEMBER         MEMBER       MEMBER_TYPE        MASTER_CARD                      
+MEMBER         MEMBER       MEMBER_TYPE        GROUP                            
+MEMBER         MEMBER       MEMBER_TYPE        INDIVIDUAL                       
+MEMBER         MEMBER       MEMBER_TYPE        DISCOVER_CARD                    
+MULTIPLE       ADDRESS      ADRESS_TYPE        WORK                             
+MULTIPLE       ADDRESS      ADRESS_TYPE        HOME                             
+SYSTEM_USER    SYSTEM_USER  SYSTEM_USER_TYPE   INDIVIDUAL                       
+SYSTEM_USER    SYSTEM_USER  SYSTEM_USER_TYPE   COST_CENTER                      
+SYSTEM_USER    SYSTEM_USER  SYSTEM_USER_TYPE   SYSTEM_GROUP                     
+SYSTEM_USER    SYSTEM_USER  SYSTEM_USER_TYPE   DBA                              
+SYSTEM_USER    SYSTEM_USER  SYSTEM_USER_TYPE   SYSTEM_ADMIN                     
+
+20 rows selected.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(5): Query the post COMMON_LOOKUP_COLUMN change.
+SQL> -- ----------------------------------------------------------------------
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Alter the table and remove the unused column.
+SQL> -- ----------------------------------------------------------------------
+SQL> 
+SQL> ---*****Addition by the student
+SQL> 
+SQL> -- Drop the extraneous column
+SQL> ALTER TABLE common_lookup
+  2  DROP COLUMN common_lookup_context;
+
+Table altered.
+
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(4): Verify modification of table structure.
+SQL> -- ----------------------------------------------------------------------
+SQL> SET NULL ''
+SQL> COLUMN table_name	 FORMAT A14
+SQL> COLUMN column_id	 FORMAT 9999
+SQL> COLUMN column_name  FORMAT A22
+SQL> COLUMN data_type	 FORMAT A12
+SQL> SELECT   table_name
+  2  ,	      column_id
+  3  ,	      column_name
+  4  ,	      CASE
+  5  		WHEN nullable = 'N' THEN 'NOT NULL'
+  6  		ELSE ''
+  7  	      END AS nullable
+  8  ,	      CASE
+  9  		WHEN data_type IN ('CHAR','VARCHAR2','NUMBER') THEN
+ 10  		  data_type||'('||data_length||')'
+ 11  		ELSE
+ 12  		  data_type
+ 13  	      END AS data_type
+ 14  FROM     user_tab_columns
+ 15  WHERE    table_name = 'COMMON_LOOKUP'
+ 16  ORDER BY 2;
+
+                         Column                                                 
+Table Name     COLUMN_ID Name                   NULLABLE DATA_TYPE              
+-------------- --------- ---------------------- -------- ------------           
+COMMON_LOOKUP          1 COMMON_LOOKUP_ID       NOT NULL NUMBER(22)             
+COMMON_LOOKUP          2 COMMON_LOOKUP_TYPE     NOT NULL VARCHAR2(30)           
+COMMON_LOOKUP          3 COMMON_LOOKUP_MEANING  NOT NULL VARCHAR2(30)           
+COMMON_LOOKUP          4 CREATED_BY             NOT NULL NUMBER(22)             
+COMMON_LOOKUP          5 CREATION_DATE          NOT NULL DATE                   
+COMMON_LOOKUP          6 LAST_UPDATED_BY        NOT NULL NUMBER(22)             
+COMMON_LOOKUP          7 LAST_UPDATE_DATE       NOT NULL DATE                   
+COMMON_LOOKUP          8 COMMON_LOOKUP_TABLE             VARCHAR2(30)           
+COMMON_LOOKUP          9 COMMON_LOOKUP_COLUMN            VARCHAR2(30)           
+COMMON_LOOKUP         10 COMMON_LOOKUP_CODE              VARCHAR2(30)           
+
+10 rows selected.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(6): Insert new rows for the TELEPHONE table.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> -- Insert new rows.
+SQL> INSERT INTO common_lookup
+  2  (	     common_lookup_id
+  3  ,	     common_lookup_type
+  4  ,	     common_lookup_meaning
+  5  ,	     created_by
+  6  ,	     creation_date
+  7  ,	     last_updated_by
+  8  ,	     last_update_date
+  9  ,	     common_lookup_table
+ 10  ,	     common_lookup_column
+ 11  ,	     common_lookup_code
+ 12  )
+ 13  VALUES
+ 14  (	     common_lookup_s1.nextval
+ 15  ,	     'HOME'
+ 16  ,	     'HOME'
+ 17  ,	     1002
+ 18  ,	     SYSDATE
+ 19  ,	     1002
+ 20  ,	     SYSDATE
+ 21  ,	     'TELEPHONE'
+ 22  ,	     'TELEPHONE_TYPE'
+ 23  ,	     ''
+ 24  );
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO common_lookup
+  2  (	     common_lookup_id
+  3  ,	     common_lookup_type
+  4  ,	     common_lookup_meaning
+  5  ,	     created_by
+  6  ,	     creation_date
+  7  ,	     last_updated_by
+  8  ,	     last_update_date
+  9  ,	     common_lookup_table
+ 10  ,	     common_lookup_column
+ 11  ,	     common_lookup_code
+ 12  )
+ 13  VALUES
+ 14  (	     common_lookup_s1.nextval
+ 15  ,	     'WORK'
+ 16  ,	     'WORK'
+ 17  ,	     1002
+ 18  ,	     SYSDATE
+ 19  ,	     1002
+ 20  ,	     SYSDATE
+ 21  ,	     'TELEPHONE'
+ 22  ,	     'TELEPHONE_TYPE'
+ 23  ,	     ''
+ 24  );
+
+1 row created.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4c(6): Verify insert of new rows to the TELEPHONE table.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN common_lookup_table    FORMAT A12  HEADING "Common|Lookup Table"
+SQL> COLUMN common_lookup_column   FORMAT A18  HEADING "Common|Lookup Column"
+SQL> COLUMN common_lookup_type	   FORMAT A18  HEADING "Common|Lookup Type"
+SQL> SELECT   common_lookup_table
+  2  ,	      common_lookup_column
+  3  ,	      common_lookup_type
+  4  FROM     common_lookup
+  5  WHERE    common_lookup_table IN
+  6  	       (SELECT table_name
+  7  		FROM   user_tables)
+  8  ORDER BY 1, 2, 3;
+
+Common       Common             Common                                          
+Lookup Table Lookup Column      Lookup Type                                     
+------------ ------------------ ------------------                              
+ADDRESS      ADRESS_TYPE        HOME                                            
+ADDRESS      ADRESS_TYPE        WORK                                            
+CONTACT      CONTACT_TYPE       CUSTOMER                                        
+CONTACT      CONTACT_TYPE       EMPLOYEE                                        
+ITEM         ITEM_TYPE          BLU-RAY                                         
+ITEM         ITEM_TYPE          DVD_FULL_SCREEN                                 
+ITEM         ITEM_TYPE          DVD_WIDE_SCREEN                                 
+ITEM         ITEM_TYPE          NINTENDO_GAMECUBE                               
+ITEM         ITEM_TYPE          PLAYSTATION2                                    
+ITEM         ITEM_TYPE          XBOX                                            
+MEMBER       MEMBER_TYPE        DISCOVER_CARD                                   
+MEMBER       MEMBER_TYPE        GROUP                                           
+MEMBER       MEMBER_TYPE        INDIVIDUAL                                      
+MEMBER       MEMBER_TYPE        MASTER_CARD                                     
+MEMBER       MEMBER_TYPE        VISA_CARD                                       
+SYSTEM_USER  SYSTEM_USER_TYPE   COST_CENTER                                     
+SYSTEM_USER  SYSTEM_USER_TYPE   DBA                                             
+SYSTEM_USER  SYSTEM_USER_TYPE   INDIVIDUAL                                      
+SYSTEM_USER  SYSTEM_USER_TYPE   SYSTEM_ADMIN                                    
+SYSTEM_USER  SYSTEM_USER_TYPE   SYSTEM_GROUP                                    
+TELEPHONE    TELEPHONE_TYPE     HOME                                            
+TELEPHONE    TELEPHONE_TYPE     WORK                                            
+
+22 rows selected.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4d: Alter the table structure.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> -- Add NOT NULL constraints to the new
+SQL> -- columns.
+SQL> ALTER TABLE common_lookup
+  2  MODIFY
+  3  (	     common_lookup_table NOT NULL
+  4  ,	     common_lookup_column NOT NULL);
+
+Table altered.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4d: Verify changes to the table structure.
+SQL> -- ----------------------------------------------------------------------
+SQL> SET NULL ''
+SQL> COLUMN table_name	 FORMAT A14
+SQL> COLUMN column_id	 FORMAT 9999
+SQL> COLUMN column_name  FORMAT A22
+SQL> COLUMN data_type	 FORMAT A12
+SQL> SELECT   table_name
+  2  ,	      column_id
+  3  ,	      column_name
+  4  ,	      CASE
+  5  		WHEN nullable = 'N' THEN 'NOT NULL'
+  6  		ELSE ''
+  7  	      END AS nullable
+  8  ,	      CASE
+  9  		WHEN data_type IN ('CHAR','VARCHAR2','NUMBER') THEN
+ 10  		  data_type||'('||data_length||')'
+ 11  		ELSE
+ 12  		  data_type
+ 13  	      END AS data_type
+ 14  FROM     user_tab_columns
+ 15  WHERE    table_name = 'COMMON_LOOKUP'
+ 16  ORDER BY 2;
+
+                         Column                                                 
+Table Name     COLUMN_ID Name                   NULLABLE DATA_TYPE              
+-------------- --------- ---------------------- -------- ------------           
+COMMON_LOOKUP          1 COMMON_LOOKUP_ID       NOT NULL NUMBER(22)             
+COMMON_LOOKUP          2 COMMON_LOOKUP_TYPE     NOT NULL VARCHAR2(30)           
+COMMON_LOOKUP          3 COMMON_LOOKUP_MEANING  NOT NULL VARCHAR2(30)           
+COMMON_LOOKUP          4 CREATED_BY             NOT NULL NUMBER(22)             
+COMMON_LOOKUP          5 CREATION_DATE          NOT NULL DATE                   
+COMMON_LOOKUP          6 LAST_UPDATED_BY        NOT NULL NUMBER(22)             
+COMMON_LOOKUP          7 LAST_UPDATE_DATE       NOT NULL DATE                   
+COMMON_LOOKUP          8 COMMON_LOOKUP_TABLE    NOT NULL VARCHAR2(30)           
+COMMON_LOOKUP          9 COMMON_LOOKUP_COLUMN   NOT NULL VARCHAR2(30)           
+COMMON_LOOKUP         10 COMMON_LOOKUP_CODE              VARCHAR2(30)           
+
+10 rows selected.
+
+SQL> 
+SQL> -- Display non-unique constraints.
+SQL> COLUMN constraint_name   FORMAT A22  HEADING "Constraint Name"
+SQL> COLUMN search_condition  FORMAT A36  HEADING "Search Condition"
+SQL> COLUMN constraint_type   FORMAT A10  HEADING "Constraint|Type"
+SQL> SELECT   uc.constraint_name
+  2  ,	      uc.search_condition
+  3  ,	      uc.constraint_type
+  4  FROM     user_constraints uc INNER JOIN user_cons_columns ucc
+  5  ON       uc.table_name = ucc.table_name
+  6  AND      uc.constraint_name = ucc.constraint_name
+  7  WHERE    uc.table_name = UPPER('common_lookup')
+  8  AND      uc.constraint_type IN (UPPER('c'),UPPER('p'))
+  9  ORDER BY uc.constraint_type DESC
+ 10  ,	      uc.constraint_name;
+
+                                                            Constraint          
+Constraint Name        Search Condition                     Type                
+---------------------- ------------------------------------ ----------          
+PK_CLOOKUP_1                                                P                   
+NN_CLOOKUP_2           "COMMON_LOOKUP_TYPE" IS NOT NULL     C                   
+NN_CLOOKUP_3           "COMMON_LOOKUP_MEANING" IS NOT NULL  C                   
+NN_CLOOKUP_4           "CREATED_BY" IS NOT NULL             C                   
+NN_CLOOKUP_5           "CREATION_DATE" IS NOT NULL          C                   
+NN_CLOOKUP_6           "LAST_UPDATED_BY" IS NOT NULL        C                   
+NN_CLOOKUP_7           "LAST_UPDATE_DATE" IS NOT NULL       C                   
+SYS_C0057774           "COMMON_LOOKUP_TABLE" IS NOT NULL    C                   
+SYS_C0057775           "COMMON_LOOKUP_COLUMN" IS NOT NULL   C                   
+
+9 rows selected.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4d: Add unique index.
+SQL> -- ----------------------------------------------------------------------
+SQL> 
+SQL> ---*****Addition by the student
+SQL> 	     -- Add unique constraint on the natural key of the COMMON_LOOKUP table.
+SQL> CREATE UNIQUE INDEX clookup_u1 ON
+  2  common_lookup (common_lookup_table, common_lookup_column, common_lookup_type);
+
+Index created.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4d: Verify new unique index.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN sequence_name   FORMAT A22 HEADING "Sequence Name"
+SQL> COLUMN column_position FORMAT 999 HEADING "Column|Position"
+SQL> COLUMN column_name     FORMAT A22 HEADING "Column|Name"
+SQL> SELECT   ui.index_name
+  2  ,	      uic.column_position
+  3  ,	      uic.column_name
+  4  FROM     user_indexes ui INNER JOIN user_ind_columns uic
+  5  ON       ui.index_name = uic.index_name
+  6  AND      ui.table_name = uic.table_name
+  7  WHERE    ui.table_name = UPPER('common_lookup')
+  8  ORDER BY ui.index_name
+  9  ,	      uic.column_position;
+
+                       Column Column                                            
+Index Name           Position Name                                              
+-------------------- -------- ----------------------                            
+CLOOKUP_U1                  1 COMMON_LOOKUP_TABLE                               
+CLOOKUP_U1                  2 COMMON_LOOKUP_COLUMN                              
+CLOOKUP_U1                  3 COMMON_LOOKUP_TYPE                                
+PK_CLOOKUP_1                1 COMMON_LOOKUP_ID                                  
+
+4 rows selected.
+
+SQL> 
+SQL> -- ----------------------------------------------------------------------
+SQL> --      Step #4d: Update the foreign keys of the TELEPHONE table.
+SQL> -- ----------------------------------------------------------------------
+SQL> ---*****Addition by the student
+SQL> 
+SQL> -- Fix obsoleted FOREIGN KEY values.
+SQL> 
+SQL> UPDATE  telephone
+  2  SET     telephone_type = (
+  3  	     SELECT common_lookup_id
+  4  	     FROM common_lookup
+  5  	     WHERE common_lookup_table = 'TELEPHONE'
+  6  	     AND common_lookup_type = 'HOME'
+  7  )
+  8  WHERE telephone_type = (
+  9  	     SELECT common_lookup_id
+ 10  	     FROM common_lookup
+ 11  	     WHERE common_lookup_table = 'ADDRESS'
+ 12  	     AND common_lookup_type = 'HOME'
+ 13  );
+
+15 rows updated.
+
+SQL> 
+SQL> UPDATE  telephone
+  2  SET     telephone_type = (
+  3  	     SELECT common_lookup_id
+  4  	     FROM common_lookup
+  5  	     WHERE common_lookup_table = 'TELEPHONE'
+  6  	     AND common_lookup_type = 'WORK'
+  7  )
+  8  WHERE telephone_type = (
+  9  	     SELECT common_lookup_id
+ 10  	     FROM common_lookup
+ 11  	     WHERE common_lookup_table = 'ADDRESS'
+ 12  	     AND common_lookup_type = 'WORk'
+ 13  );
+
+0 rows updated.
+
+SQL> -- ----------------------------------------------------------------------
+SQL> --  Step #4d: Verify the foreign keys of the TELEPHONE table.
+SQL> -- ----------------------------------------------------------------------
+SQL> COLUMN common_lookup_table  FORMAT A14 HEADING "Common|Lookup Table"
+SQL> COLUMN common_lookup_column FORMAT A14 HEADING "Common|Lookup Column"
+SQL> COLUMN common_lookup_type	 FORMAT A8  HEADING "Common|Lookup|Type"
+SQL> COLUMN count_dependent	 FORMAT 999 HEADING "Count of|Foreign|Keys"
+SQL> COLUMN count_lookup	 FORMAT 999 HEADING "Count of|Primary|Keys"
+SQL> SELECT   cl.common_lookup_table
+  2  ,	      cl.common_lookup_column
+  3  ,	      cl.common_lookup_type
+  4  ,	      COUNT(a.address_id) AS count_dependent
+  5  ,	      COUNT(DISTINCT cl.common_lookup_table) AS count_lookup
+  6  FROM     address a RIGHT JOIN common_lookup cl
+  7  ON       a.address_type = cl.common_lookup_id
+  8  WHERE    cl.common_lookup_table = 'ADDRESS'
+  9  AND      cl.common_lookup_column = 'ADDRESS_TYPE'
+ 10  AND      cl.common_lookup_type IN ('HOME','WORK')
+ 11  GROUP BY cl.common_lookup_table
+ 12  ,	      cl.common_lookup_column
+ 13  ,	      cl.common_lookup_type
+ 14  UNION
+ 15  SELECT   cl.common_lookup_table
+ 16  ,	      cl.common_lookup_column
+ 17  ,	      cl.common_lookup_type
+ 18  ,	      COUNT(t.telephone_id) AS count_dependent
+ 19  ,	      COUNT(DISTINCT cl.common_lookup_table) AS count_lookup
+ 20  FROM     telephone t RIGHT JOIN common_lookup cl
+ 21  ON       t.telephone_type = cl.common_lookup_id
+ 22  WHERE    cl.common_lookup_table = 'TELEPHONE'
+ 23  AND      cl.common_lookup_column = 'TELEPHONE_TYPE'
+ 24  AND      cl.common_lookup_type IN ('HOME','WORK')
+ 25  GROUP BY cl.common_lookup_table
+ 26  ,	      cl.common_lookup_column
+ 27  ,	      cl.common_lookup_type;
+
+                              Common   Count of Count of                        
+Common         Common         Lookup    Foreign  Primary                        
+Lookup Table   Lookup Column  Type         Keys     Keys                        
+-------------- -------------- -------- -------- --------                        
+TELEPHONE      TELEPHONE_TYPE HOME           15        1                        
+TELEPHONE      TELEPHONE_TYPE WORK            0        1                        
+
+2 rows selected.
+
 SQL> SPOOL OFF

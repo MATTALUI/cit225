@@ -679,8 +679,6 @@ GROUP BY c.last_name||', '||c.first_name||' '||c.middle_name
 ,       (r.return_date - r.check_out_date) || '-DAY RENTAL'
 ORDER BY 2;
 
-SPOOL OFF
-/*
 -- ----------------------------------------------------------------------
 --  Objective #4: Modify the design of the COMMON_LOOKUP table, insert
 --                new data into the model, and update old non-compliant
@@ -692,6 +690,8 @@ SPOOL OFF
 -- ----------------------------------------------------------------------
 
 ---*****Addition by the student
+DROP INDEX COMMON_LOOKUP_N1;
+DROP INDEX COMMON_LOOKUP_U2;
 
 
 -- ----------------------------------------------------------------------
@@ -708,7 +708,10 @@ WHERE    table_name = 'COMMON_LOOKUP';
 --  Step #4b: Add three new columns.
 -- ----------------------------------------------------------------------
 ---*****Addition by the student
-
+ALTER TABLE common_lookup
+ADD common_lookup_table  VARCHAR(30)
+ADD common_lookup_column VARCHAR(30)
+ADD common_lookup_code   VARCHAR(30);
 
 
 -- ----------------------------------------------------------------------
@@ -761,6 +764,27 @@ ORDER BY 1, 2, 3;
 --  Step #4c(4): Update the type records.
 -- ----------------------------------------------------------------------
 ---*****Addition by the student
+UPDATE 	common_lookup
+SET	common_lookup_table = 'SYSTEM_USER'
+,	common_lookup_column = 'SYSTEM_USER_TYPE'
+WHERE	common_lookup_context = 'SYSTEM_USER';
+
+UPDATE 	common_lookup
+SET	common_lookup_table = 'CONTACT'
+,	common_lookup_column = 'CONTACT_TYPE'
+WHERE	common_lookup_context = 'CONTACT';
+
+UPDATE 	common_lookup
+SET	common_lookup_table = 'MEMBER'
+,	common_lookup_column = 'MEMBER_TYPE'
+WHERE	common_lookup_context = 'MEMBER'
+AND	common_lookup_type IN ('INDIVIDUAL', 'GROUP', 'DISCOVER_CARD', 'MASTER_CARD', 'VISA_CARD');
+
+
+UPDATE 	common_lookup
+SET	common_lookup_table = 'ITEM'
+,	common_lookup_column = 'ITEM_TYPE'
+WHERE	common_lookup_context = 'ITEM';
 
 -- ----------------------------------------------------------------------
 --  Step #4c(4): Verify update of the type records.
@@ -787,6 +811,10 @@ ORDER BY 1, 2, 3;
 -- ----------------------------------------------------------------------
 ---*****Addition by the student
 
+UPDATE 	common_lookup
+SET	common_lookup_table = 'ADDRESS'
+,	common_lookup_column = 'ADRESS_TYPE'
+WHERE	common_lookup_context = 'MULTIPLE';
 
 
 -- ----------------------------------------------------------------------
@@ -816,7 +844,8 @@ ORDER BY 1, 2, 3;
 ---*****Addition by the student
 
 -- Drop the extraneous column 
-
+ALTER TABLE common_lookup
+DROP COLUMN common_lookup_context; 
 
 
 -- ----------------------------------------------------------------------
@@ -849,6 +878,55 @@ ORDER BY 2;
 -- ----------------------------------------------------------------------
 ---*****Addition by the student
 -- Insert new rows.
+INSERT INTO common_lookup
+(	common_lookup_id
+,	common_lookup_type
+,	common_lookup_meaning
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	common_lookup_table
+,	common_lookup_column
+,	common_lookup_code
+)
+VALUES
+(	common_lookup_s1.nextval
+,	'HOME'
+,	'HOME'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	'TELEPHONE'
+,	'TELEPHONE_TYPE'
+,	''
+);
+
+INSERT INTO common_lookup
+(	common_lookup_id
+,	common_lookup_type
+,	common_lookup_meaning
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	common_lookup_table
+,	common_lookup_column
+,	common_lookup_code
+)
+VALUES
+(	common_lookup_s1.nextval
+,	'WORK'
+,	'WORK'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	'TELEPHONE'
+,	'TELEPHONE_TYPE'
+,	''
+);
 
 
 
@@ -874,8 +952,10 @@ ORDER BY 1, 2, 3;
 
 -- Add NOT NULL constraints to the new
 -- columns.
-
-
+ALTER TABLE common_lookup
+MODIFY 
+(	common_lookup_table NOT NULL
+,	common_lookup_column NOT NULL);
 
 -- ----------------------------------------------------------------------
 --  Step #4d: Verify changes to the table structure.
@@ -923,7 +1003,8 @@ ORDER BY uc.constraint_type DESC
 
 ---*****Addition by the student
 	-- Add unique constraint on the natural key of the COMMON_LOOKUP table.
-	
+CREATE UNIQUE INDEX clookup_u1 ON
+common_lookup (common_lookup_table, common_lookup_column, common_lookup_type);
 
 -- ----------------------------------------------------------------------
 --  Step #4d: Verify new unique index.
@@ -948,8 +1029,33 @@ ORDER BY ui.index_name
 
 -- Fix obsoleted FOREIGN KEY values.
 
+UPDATE	telephone
+SET	telephone_type = (
+	SELECT common_lookup_id
+        FROM common_lookup
+	WHERE common_lookup_table = 'TELEPHONE'
+	AND common_lookup_type = 'HOME'
+)
+WHERE telephone_type = (
+	SELECT common_lookup_id
+        FROM common_lookup
+        WHERE common_lookup_table = 'ADDRESS'
+        AND common_lookup_type = 'HOME'
+);
 
-
+UPDATE	telephone
+SET	telephone_type = (
+	SELECT common_lookup_id
+        FROM common_lookup
+	WHERE common_lookup_table = 'TELEPHONE'
+	AND common_lookup_type = 'WORK'
+)
+WHERE telephone_type = (
+	SELECT common_lookup_id
+        FROM common_lookup
+        WHERE common_lookup_table = 'ADDRESS'
+        AND common_lookup_type = 'WORk'
+);
 -- ----------------------------------------------------------------------
 --  Step #4d: Verify the foreign keys of the TELEPHONE table.
 -- ----------------------------------------------------------------------
@@ -985,5 +1091,4 @@ AND      cl.common_lookup_type IN ('HOME','WORK')
 GROUP BY cl.common_lookup_table
 ,        cl.common_lookup_column
 ,        cl.common_lookup_type;
-*/
 SPOOL OFF
