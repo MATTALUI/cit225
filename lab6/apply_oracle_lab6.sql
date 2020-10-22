@@ -162,7 +162,7 @@ WHERE    uc.table_name = UPPER('price')
 AND      ucc.column_name = UPPER('active_flag')
 AND      uc.constraint_name = UPPER('yn_price')
 AND      uc.constraint_type = 'C';
-/*
+
 -- ----------------------------------------------------------------------
 --  Step #3 : Insert new data into the model.
 -- ----------------------------------------------------------------------
@@ -178,7 +178,8 @@ AND      uc.constraint_type = 'C';
 --  Step #3a: Rename ITEM_RELEASE_DATE Column.
 -- ----------------------------------------------------------------------
 ---*****Addition by the student
-
+ALTER TABLE item
+RENAME COLUMN item_release_date TO release_date;
 
 
 -- ----------------------------------------------------------------------
@@ -201,14 +202,90 @@ SELECT   table_name
 FROM     user_tab_columns
 WHERE    TABLE_NAME = 'ITEM'
 ORDER BY 2;
-
 -- ----------------------------------------------------------------------
 --  Step #3b: Insert three rows in the ITEM table.
 -- ----------------------------------------------------------------------
 ---*****Addition by the student
+INSERT INTO item
+(	item_id
+,	item_barcode
+,	item_type
+,	item_title
+,	item_subtitle
+,	item_rating
+,	release_date
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+)
+VALUES
+(	item_s1.NEXTVAL
+,	'786936161878'
+,	(SELECT common_lookup_id FROM common_lookup WHERE common_lookup_type = 'DVD_WIDE_SCREEN')
+,	'Tron'
+,	'20th Anniversary Collectors Edition'
+,	'PG'
+,	TRUNC(SYSDATE) - 15
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+);
 
+INSERT INTO item
+(	item_id
+,	item_barcode
+,	item_type
+,	item_title
+,	item_subtitle
+,	item_rating
+,	release_date
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+)
+VALUES
+(	item_s1.NEXTVAL
+,	'4101-10422'
+,	(SELECT common_lookup_id FROM common_lookup WHERE common_lookup_type = 'DVD_WIDE_SCREEN')
+,	'Taken'
+,	''
+,	'PG-13'
+,	TRUNC(SYSDATE) - 15
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+);
 
-
+INSERT INTO item
+(	item_id
+,	item_barcode
+,	item_type
+,	item_title
+,	item_subtitle
+,	item_rating
+,	release_date
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+)
+VALUES
+(	item_s1.NEXTVAL
+,	'5918-1040'
+,	(SELECT common_lookup_id FROM common_lookup WHERE common_lookup_type = 'DVD_WIDE_SCREEN')
+,	'Finding Faith in Christ'
+,	'LDS'
+,	'G'
+,	TRUNC(SYSDATE) - 15
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+);
 
 -- ----------------------------------------------------------------------
 --  Verification #3b: Verify the column name change.
@@ -228,7 +305,182 @@ WHERE   (SYSDATE - i.release_date) < 31;
 -- ----------------------------------------------------------------------
 ---*****Addition by the student
 
+--Harry
+INSERT INTO MEMBER
+( member_id
+ , member_type
+ , account_number
+ , credit_card_number
+ , credit_card_type
+ , created_by
+ , creation_date
+ , last_updated_by
+ , last_update_date )
+ VALUES
+ ( member_s1.NEXTVAL
+ ,(SELECT   common_lookup_id
+   FROM     common_lookup
+   WHERE    common_lookup_context = 'MEMBER'
+   AND      common_lookup_type = 'GROUP')
+ , 'US00011'
+ , '6011 0000 0000 0078'
+ , (SELECT common_lookup_id
+    FROM   common_lookup
+    WHERE  common_lookup_type = 'DISCOVER_CARD')
+ , 1002, SYSDATE, 1002, SYSDATE);
 
+INSERT INTO contact VALUES
+( contact_s1.nextval
+, member_s1.currval
+,(SELECT   common_lookup_id
+  FROM     common_lookup
+  WHERE    common_lookup_context = 'CONTACT'
+  AND      common_lookup_type = 'CUSTOMER')
+,'Harry','','Potter'
+, 1002, SYSDATE, 1002, SYSDATE);
+
+INSERT INTO address VALUES
+( address_s1.nextval
+, contact_s1.currval
+,(SELECT common_lookup_id
+  FROM     common_lookup
+  WHERE    common_lookup_type = 'HOME')
+,'Provo','Utah','84604'
+, 1002, SYSDATE, 1002, SYSDATE);
+
+INSERT INTO street_address VALUES
+( street_address_s1.nextval
+, address_s1.currval
+,'900 E, 300 N'
+, 1002, SYSDATE, 1002, SYSDATE);
+
+INSERT INTO telephone VALUES
+( telephone_s1.nextval
+, address_s1.currval
+, contact_s1.currval
+,(SELECT   common_lookup_id
+  FROM     common_lookup
+  WHERE    common_lookup_type = 'HOME')
+,'USA','801','333-3333'
+, 1002, SYSDATE, 1002, SYSDATE);
+
+--Ginny
+INSERT INTO MEMBER
+( member_id
+ , member_type
+ , account_number
+ , credit_card_number
+ , credit_card_type
+ , created_by
+ , creation_date
+ , last_updated_by
+ , last_update_date )
+ VALUES
+ ( member_s1.NEXTVAL
+ ,(SELECT   common_lookup_id
+   FROM     common_lookup
+   WHERE    common_lookup_context = 'MEMBER'
+   AND      common_lookup_type = 'GROUP')
+ , 'US00011'
+ , '6011 0000 0000 0078'
+ , (SELECT common_lookup_id
+    FROM   common_lookup
+    WHERE  common_lookup_type = 'DISCOVER_CARD')
+ , 1002, SYSDATE, 1002, SYSDATE);
+
+INSERT INTO contact VALUES
+( contact_s1.nextval
+, member_s1.currval
+,(SELECT   common_lookup_id
+  FROM     common_lookup
+  WHERE    common_lookup_context = 'CONTACT'
+  AND      common_lookup_type = 'CUSTOMER')
+,'Ginny','','Potter'
+, 1002, SYSDATE, 1002, SYSDATE);
+
+INSERT INTO address VALUES
+( address_s1.nextval
+, contact_s1.currval
+,(SELECT common_lookup_id
+  FROM     common_lookup
+  WHERE    common_lookup_type = 'HOME')
+,'Provo','Utah','84604'
+, 1002, SYSDATE, 1002, SYSDATE);
+
+INSERT INTO street_address VALUES
+( street_address_s1.nextval
+, address_s1.currval
+,'900 E, 300 N'
+, 1002, SYSDATE, 1002, SYSDATE);
+
+INSERT INTO telephone VALUES
+( telephone_s1.nextval
+, address_s1.currval
+, contact_s1.currval
+,(SELECT   common_lookup_id
+  FROM     common_lookup
+  WHERE    common_lookup_type = 'HOME')
+,'USA','801','333-3333'
+, 1002, SYSDATE, 1002, SYSDATE);
+
+--Lily
+INSERT INTO MEMBER
+( member_id
+ , member_type
+ , account_number
+ , credit_card_number
+ , credit_card_type
+ , created_by
+ , creation_date
+ , last_updated_by
+ , last_update_date )
+ VALUES
+ ( member_s1.NEXTVAL
+ ,(SELECT   common_lookup_id
+   FROM     common_lookup
+   WHERE    common_lookup_context = 'MEMBER'
+   AND      common_lookup_type = 'GROUP')
+ , 'US00011'
+ , '6011 0000 0000 0078'
+ , (SELECT common_lookup_id
+    FROM   common_lookup
+    WHERE  common_lookup_type = 'DISCOVER_CARD')
+ , 1002, SYSDATE, 1002, SYSDATE);
+
+INSERT INTO contact VALUES
+( contact_s1.nextval
+, member_s1.currval
+,(SELECT   common_lookup_id
+  FROM     common_lookup
+  WHERE    common_lookup_context = 'CONTACT'
+  AND      common_lookup_type = 'CUSTOMER')
+,'Lilly','Luna','Potter'
+, 1002, SYSDATE, 1002, SYSDATE);
+
+INSERT INTO address VALUES
+( address_s1.nextval
+, contact_s1.currval
+,(SELECT common_lookup_id
+  FROM     common_lookup
+  WHERE    common_lookup_type = 'HOME')
+,'Provo','Utah','84604'
+, 1002, SYSDATE, 1002, SYSDATE);
+
+INSERT INTO street_address VALUES
+( street_address_s1.nextval
+, address_s1.currval
+,'900 E, 300 N'
+, 1002, SYSDATE, 1002, SYSDATE);
+
+INSERT INTO telephone VALUES
+( telephone_s1.nextval
+, address_s1.currval
+, contact_s1.currval
+,(SELECT   common_lookup_id
+  FROM     common_lookup
+  WHERE    common_lookup_type = 'HOME')
+,'USA','801','333-3333'
+, 1002, SYSDATE, 1002, SYSDATE);
 
 
 -- ----------------------------------------------------------------------
@@ -253,7 +505,71 @@ WHERE    c.last_name = 'Potter';
 --  Step #3d: Insert three new RENTAL and RENTAL_ITEM table rows..
 -- ----------------------------------------------------------------------
 ---*****Addition by the student
+-- Harry's Rentals
+INSERT INTO rental
+(	rental_id
+,	customer_id
+,	check_out_date
+,	return_date
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date)
+VALUES
+(	rental_s1.nextval
+,	(SELECT contact_id FROM contact WHERE last_name = 'Potter' AND first_name = 'Harry')
+,	TRUNC(SYSDATE)
+,	TRUNC(SYSDATE) + 1
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE);
 
+INSERT INTO rental_item
+(	rental_item_id
+,	rental_id
+,	item_id
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	rental_item_type
+,	rental_item_price
+)
+VALUES
+(	rental_item_s1.nextval
+,	rental_s1.currval
+,	(SELECT   d.item_id FROM item d, common_lookup cl WHERE d.item_title = 'Star Wars I' AND d.item_subtitle = 'Phantom Menace' AND d.item_type = cl.common_lookup_id AND cl.common_lookup_type = 'DVD_WIDE_SCREEN')
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	NULL
+,	NULL);
+
+INSERT INTO rental_item
+(	rental_item_id
+,	rental_id
+,	item_id
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	rental_item_type
+,	rental_item_price
+)
+VALUES
+(	rental_item_s1.nextval
+,	rental_s1.currval
+,	(SELECT   d.item_id FROM item d, common_lookup cl WHERE d.item_title = 'Tron' AND d.item_subtitle = '20th Anniversary Collectors Edition' AND d.item_type = cl.common_lookup_id AND cl.common_lookup_type = 'DVD_WIDE_SCREEN')
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	NULL
+,	NULL);
+-- Ginny's Rentals
+-- Lily's Rentals
 
 
 
@@ -282,6 +598,8 @@ GROUP BY c.last_name||', '||c.first_name||' '||c.middle_name
 ,       (r.return_date - r.check_out_date) || '-DAY RENTAL'
 ORDER BY 2;
 
+SPOOL OFF
+/*
 -- ----------------------------------------------------------------------
 --  Objective #4: Modify the design of the COMMON_LOOKUP table, insert
 --                new data into the model, and update old non-compliant
