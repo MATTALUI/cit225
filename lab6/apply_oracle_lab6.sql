@@ -47,8 +47,8 @@ SELECT  'Step #1' AS "Step Number" FROM dual;
 ---*****Addition by the student
 ALTER TABLE	rental_item
 ADD		rental_item_price NUMBER
-ADD		rental_item_type  NUMBER
-ADD CONSTRAINT	fk_rental_item_5 FOREIGN KEY (rental_item_type) REFERENCES common_lookup (common_lookup_id);
+ADD		rental_item_type  NUMBER;
+--ADD CONSTRAINT	fk_rental_item_5 FOREIGN KEY (rental_item_type) REFERENCES common_lookup (common_lookup_id);
 
 -- ----------------------------------------------------------------------
 --  Verification #1: Verify the table structure.
