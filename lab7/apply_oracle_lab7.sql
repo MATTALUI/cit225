@@ -412,8 +412,6 @@ FROM     user_tab_columns
 WHERE    TABLE_NAME = 'RENTAL_ITEM'
 AND      column_name = 'RENTAL_ITEM_TYPE';
 
-SPOOL OFF
-/*
 -- ----------------------------------------------------------------------
 --  Step #4 : Fix query to get 135 rows.
 -- ----------------------------------------------------------------------
@@ -431,15 +429,16 @@ SELECT   i.item_id
 ,        cl.common_lookup_id AS price_type
 ,        cl.common_lookup_type AS price_desc
 ,        CASE
-           WHEN  ...implement logic "B"... THEN ...result VALUE...
-           ELSE  ...result VALUE ...
+           WHEN ((TRUNC(SYSDATE) <= (release_date + 30)) OR ((TRUNC(SYSDATE) > release_date+30) AND (active_flag='N')))THEN release_date
+           ELSE release_date + 31
          END AS start_date
 ,        CASE
-           WHEN  ...implement logic "C"... THEN ...result VALUE...
+	   WHEN (((TRUNC(SYSDATE) - release_date) > 30) AND active_flag='N') THEN release_date + 30
+	   ELSE NULL
          END AS end_date
 ,        CASE
-           WHEN  ...implement logic "D"... THEN ...result VALUE...
-           ELSE  ...result VALUE ...
+           WHEN  TRUNC(SYSDATE) > release_date THEN 69
+           ELSE  420
          END AS amount
 FROM     item i CROSS JOIN
         (SELECT 'Y' AS active_flag FROM dual
@@ -453,7 +452,8 @@ FROM     item i CROSS JOIN
          common_lookup cl ON dr.rental_days = SUBSTR(cl.common_lookup_type,1,1)
 WHERE    cl.common_lookup_table = 'PRICE'
 AND      cl.common_lookup_column = 'PRICE_TYPE'
-AND NOT ( ... implement logic "A" ... )
+AND NOT ( active_flag = 'N' AND (TRUNC(SYSDATE)-30) < release_date  )
 ORDER BY 1, 2, 3;
 SPOOL OFF
-*/
+
+           WHEN (TRUNC(SYSDATE) >= (start_date + 30) AND start_date = release_date AND active_flag='N') THEN release_date + 30
