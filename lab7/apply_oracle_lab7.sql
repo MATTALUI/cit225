@@ -437,8 +437,18 @@ SELECT   i.item_id
 	   ELSE NULL
          END AS end_date
 ,        CASE
-           WHEN  TRUNC(SYSDATE) > release_date THEN 69
-           ELSE  420
+           WHEN (TRUNC(SYSDATE) >= (release_date + 30) AND active_flag='Y') THEN
+	      CASE
+		 WHEN rental_days = 1 then 1
+		 WHEN rental_days = 3 then 3
+		 WHEN rental_days = 5 then 5
+	      END
+	   ELSE
+	      CASE
+		 WHEN rental_days = 1 then 3
+		 WHEN rental_days = 3 then 10
+		 WHEN rental_days = 5 then 15
+	      END
          END AS amount
 FROM     item i CROSS JOIN
         (SELECT 'Y' AS active_flag FROM dual
