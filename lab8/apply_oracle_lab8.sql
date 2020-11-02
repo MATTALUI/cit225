@@ -19,7 +19,7 @@
 -- ------------------------------------------------------------------
 
 -- Call library files.
-@/home/student/Data/cit225/oracle/lab7/apply_oracle_lab7.sql
+@/home/student/cit225/lab7/apply_oracle_lab7.sql
 
 -- Open log file.
 SPOOL apply_oracle_lab8.txt
@@ -27,6 +27,7 @@ SPOOL apply_oracle_lab8.txt
 -- Set the page size.
 SET ECHO ON
 SET PAGESIZE 999
+
 
 -- ----------------------------------------------------------------------
 --  Step #1 : Add two columns to the RENTAL_ITEM table.
@@ -43,7 +44,7 @@ INSERT INTO price
 , creation_date
 , last_updated_by
 , last_update_date )
-( SELECT price_s.NEXTVAL
+( SELECT price_s1.NEXTVAL
   ,        item_id
   ,        price_type
   ,        active_flag
@@ -60,20 +61,31 @@ INSERT INTO price
      ,        cl.common_lookup_id AS price_type
      ,        cl.common_lookup_type AS price_desc
      ,        CASE
-                WHEN  ...implement logic "B" FROM Lab #7... THEN ...result VALUE...
-                ELSE  ...result VALUE ...
+                 WHEN ((TRUNC(SYSDATE) <= (release_date + 30)) OR ((TRUNC(SYSDATE) > release_date+30) AND (active_flag='N')))THEN release_date
+                 ELSE release_date + 31
               END AS start_date
      ,        CASE
-                WHEN  ...implement logic "C" FROM Lab #7... THEN ...result VALUE...
+	         WHEN (((TRUNC(SYSDATE) - release_date) > 30) AND active_flag='N') THEN release_date + 30
+	         ELSE NULL
               END AS end_date
      ,        CASE
-                WHEN  ...implement logic "D" FROM Lab #7... THEN ...result VALUE...
-                ELSE  ...result VALUE ...
-            END AS amount
-     ,        ( ... subquery ... ) AS created_by
-     ,        ( ... truncated CURRENT DATE ...) AS creation_date
-     ,        ( ... subquery ... ) AS last_updated_by
-     ,        ( ... truncated CURRENT DATE ...) AS last_update_date
+                 WHEN (TRUNC(SYSDATE) >= (release_date + 30) AND active_flag='Y') THEN
+	            CASE
+		       WHEN rental_days = 1 then 1
+		       WHEN rental_days = 3 then 3
+		       WHEN rental_days = 5 then 5
+	            END
+	         ELSE
+	            CASE
+		       WHEN rental_days = 1 then 3
+		       WHEN rental_days = 3 then 10
+		       WHEN rental_days = 5 then 15
+	            END
+              END AS amount
+     ,        1002 AS created_by
+     ,        TRUNC(SYSDATE) AS creation_date
+     ,        1002 AS last_updated_by
+     ,        TRUNC(SYSDATE) AS last_update_date
      FROM     item i CROSS JOIN
              (SELECT 'Y' AS active_flag FROM dual
               UNION ALL
@@ -86,71 +98,7 @@ INSERT INTO price
               common_lookup cl ON dr.rental_days = SUBSTR(cl.common_lookup_type,1,1)
      WHERE    cl.common_lookup_table = 'PRICE'
      AND      cl.common_lookup_column = 'PRICE_TYPE'
-     AND NOT ( ...implement logic "A" FROM Lab #7...)));
-
-
-
-
-
-
-
-/*
-
-SELECT   i.item_id
-,        af.active_flag
-,        cl.common_lookup_id AS price_type
-,        cl.common_lookup_type AS price_desc
-,        CASE
-           WHEN ((TRUNC(SYSDATE) <= (release_date + 30)) OR ((TRUNC(SYSDATE) > release_date+30) AND (active_flag='N')))THEN release_date
-           ELSE release_date + 31
-         END AS start_date
-,        CASE
-	   WHEN (((TRUNC(SYSDATE) - release_date) > 30) AND active_flag='N') THEN release_date + 30
-	   ELSE NULL
-         END AS end_date
-,        CASE
-           WHEN (TRUNC(SYSDATE) >= (release_date + 30) AND active_flag='Y') THEN
-	      CASE
-		 WHEN rental_days = 1 then 1
-		 WHEN rental_days = 3 then 3
-		 WHEN rental_days = 5 then 5
-	      END
-	   ELSE
-	      CASE
-		 WHEN rental_days = 1 then 3
-		 WHEN rental_days = 3 then 10
-		 WHEN rental_days = 5 then 15
-	      END
-         END AS amount
-FROM     item i CROSS JOIN
-        (SELECT 'Y' AS active_flag FROM dual
-         UNION ALL
-         SELECT 'N' AS active_flag FROM dual) af CROSS JOIN
-        (SELECT '1' AS rental_days FROM dual
-         UNION ALL
-         SELECT '3' AS rental_days FROM dual
-         UNION ALL
-         SELECT '5' AS rental_days FROM dual) dr INNER JOIN
-         common_lookup cl ON dr.rental_days = SUBSTR(cl.common_lookup_type,1,1)
-WHERE    cl.common_lookup_table = 'PRICE'
-AND      cl.common_lookup_column = 'PRICE_TYPE'
-AND NOT ( active_flag = 'N' AND (TRUNC(SYSDATE)-30) < release_date  )
-ORDER BY 1, 2, 3;
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
+     AND NOT ( active_flag = 'N' AND (TRUNC(SYSDATE)-30) < release_date )));
 
 
 -- Query the result.
