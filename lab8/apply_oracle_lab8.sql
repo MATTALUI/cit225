@@ -148,8 +148,6 @@ AND     (TRUNC(SYSDATE) - TRUNC(i.release_date)) < 31
 AND      NOT (end_date IS NULL);
 
 
-SPOOL OFF
-/*
 -- ----------------------------------------------------------------------
 --  Step #2 : After inserting the data into the PRICE table, you should
 --            add the NOT NULL constraint to the PRICE_TYPE column of
@@ -159,9 +157,9 @@ SPOOL OFF
 --  Step #2 : Add a constraint to PRICE table.
 -- ----------------------------------------------------------------------
 
-
-
-
+ALTER TABLE price
+MODIFY price_type
+CONSTRAINT nn_price_7 NOT NULL;
 
 -- ----------------------------------------------------------------------
 --  Step #2 : Verify the constraint is added to the PRICE table.
@@ -201,7 +199,7 @@ FROM   rental r;
 -- ----------------------------------------------------------------------
 UPDATE   rental_item ri
 SET      rental_item_price =
-          (SELECT   p.amount
+         ( SELECT   p.amount
            FROM     price p INNER JOIN common_lookup cl1
            ON       p.price_type = cl1.common_lookup_id CROSS JOIN rental r
                     CROSS JOIN common_lookup cl2
@@ -209,9 +207,9 @@ SET      rental_item_price =
            AND      ri.rental_id = r.rental_id
            AND      ri.rental_item_type = cl2.common_lookup_id
            AND      cl1.common_lookup_code = cl2.common_lookup_code
-           AND      r.check_out_date
-                      BETWEEN p.start_date AND p.end_date);
+           AND      r.check_out_date BETWEEN p.start_date AND p.end_date);
 
+--update rental_item set rental_item_price = 420.69;
 -- ----------------------------------------------------------------------
 --  Verify #3 : Query the RENTAL_ITEM_PRICE values.
 -- ----------------------------------------------------------------------
@@ -262,40 +260,8 @@ AND      r.check_out_date
 BETWEEN  p.start_date AND NVL(p.end_date,TRUNC(SYSDATE) + 1)
 ORDER BY 2, 3;
 
-COL customer_name          FORMAT A20  HEADING "Contact|--------|Customer Name"
-COL r_rental_id            FORMAT 9999 HEADING "Rental|------|Rental|ID #"
-COL amount                 FORMAT 9999 HEADING "Price|------||Amount"
-COL price_type_code        FORMAT 9999 HEADING "Price|------|Type|Code"
-COL rental_item_type_code  FORMAT 9999 HEADING "Rental|Item|------|Type|Code"
-COL needle                 FORMAT A11  HEADING "Rental|--------|Check Out|Date"
-COL low_haystack           FORMAT A11  HEADING "Price|--------|Start|Date"
-COL high_haystack          FORMAT A11  HEADING "Price|--------|End|Date"
-SELECT   c.last_name||', '||c.first_name
-||       CASE
-           WHEN c.middle_name IS NOT NULL THEN ' '||c.middle_name
-         END AS customer_name
-,        ri.rental_id AS ri_rental_id
-,        p.amount
-,        TO_NUMBER(cl2.common_lookup_code) AS price_type_code
-,        TO_NUMBER(cl2.common_lookup_code) AS rental_item_type_code
-,        p.start_date AS low_haystack
-,        r.check_out_date AS needle
-,        NVL(p.end_date,TRUNC(SYSDATE) + 1) AS high_haystack
-FROM     price p INNER JOIN common_lookup cl1
-ON       p.price_type = cl1.common_lookup_id
-AND      cl1.common_lookup_table = 'PRICE'
-AND      cl1.common_lookup_column = 'PRICE_TYPE' FULL JOIN rental_item ri
-ON       p.item_id = ri.item_id INNER JOIN common_lookup cl2
-ON       ri.rental_item_type = cl2.common_lookup_id
-AND      cl2.common_lookup_table = 'RENTAL_ITEM'
-AND      cl2.common_lookup_column = 'RENTAL_ITEM_TYPE' RIGHT JOIN rental r
-ON       ri.rental_id = r.rental_id FULL JOIN contact c
-ON       r.customer_id = c.contact_id
-WHERE    cl1.common_lookup_code = cl2.common_lookup_code
-AND      p.active_flag = 'Y'
-AND NOT     r.check_out_date
-BETWEEN  p.start_date AND NVL(p.end_date,TRUNC(SYSDATE) + 1)
-ORDER BY 2, 3;
+SPOOL OFF
+/*
 
 -- Reset to default linesize value.
 SET LINESIZE 80
@@ -308,9 +274,9 @@ SET LINESIZE 80
 --  Step #4 : Alter the RENTAL_ITEM table.
 -- ----------------------------------------------------------------------
 
-
-
-
+ALTER TABLE rental_item
+MODIFY rental_item_price
+CONSTRAINT nn_rental_item_8 NOT NULL;
 
 -- ----------------------------------------------------------------------
 --  Verify #4 : Add NOT NULL constraint on RENTAL_ITEM_PRICE column
