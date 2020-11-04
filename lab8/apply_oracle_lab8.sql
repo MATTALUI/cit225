@@ -207,7 +207,7 @@ SET      rental_item_price =
            AND      ri.rental_id = r.rental_id
            AND      ri.rental_item_type = cl2.common_lookup_id
            AND      cl1.common_lookup_code = cl2.common_lookup_code
-           AND      r.check_out_date BETWEEN p.start_date AND p.end_date);
+           AND      r.check_out_date BETWEEN p.start_date AND NVL(p.end_date, TRUNC(SYSDATE) + 1));
 
 --update rental_item set rental_item_price = 420.69;
 -- ----------------------------------------------------------------------
@@ -260,8 +260,6 @@ AND      r.check_out_date
 BETWEEN  p.start_date AND NVL(p.end_date,TRUNC(SYSDATE) + 1)
 ORDER BY 2, 3;
 
-SPOOL OFF
-/*
 
 -- Reset to default linesize value.
 SET LINESIZE 80
@@ -293,5 +291,3 @@ FROM     user_tab_columns
 WHERE    TABLE_NAME = 'RENTAL_ITEM'
 AND      column_name = 'RENTAL_ITEM_PRICE';
 
-SPOOL OFF
-*/
