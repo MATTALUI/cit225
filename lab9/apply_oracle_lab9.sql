@@ -308,7 +308,6 @@ WHERE    common_lookup_table = 'TRANSACTION'
 AND      common_lookup_column IN ('TRANSACTION_TYPE','PAYMENT_METHOD_TYPE')
 ORDER BY 1, 2, 3 DESC;
 
-SPOOL OFF
 -- ----------------------------------------------------------------------
 --  Step #3a : Create and seed AIRPORT and ACCOUNT_LIST tables.
 -- ----------------------------------------------------------------------
@@ -331,21 +330,29 @@ END;
 -- ----------------------------------------------------------------------
 ---***Add by student
 -- Create airport table.
-
-
-
-
-
+CREATE TABLE airport(
+	airport_id	 NUMBER		NOT NULL,
+	airport_code	 VARCHAR(3)	NOT NULL,
+	airport_city	 VARCHAR(30)	NOT NULL,
+	city		 VARCHAR(30)	NOT NULL,
+	state_province	 VARCHAR(30)	NOT NULL,
+	created_by	 NUMBER		NOT NULL,
+	creation_date	 DATE		NOT NULL,
+	last_updated_by	 NUMBER		NOT NULL,
+	last_update_date DATE		NOT NULL,
+	CONSTRAINT pk_airport PRIMARY KEY (airport_id),
+	CONSTRAINT fk_airport_1 FOREIGN KEY (created_by) REFERENCES system_user (system_user_id),
+	CONSTRAINT fk_airport_2 FOREIGN KEY (last_updated_by) REFERENCES system_user (system_user_id)
+);
 
 -- ----------------------------------------------------------------------
 --  Step #3a : Create the AIRPORT sequence.
 -- ----------------------------------------------------------------------
 ---***Add by student
 -- Create sequence.
-
-
-
-
+CREATE SEQUENCE airport_s1
+START WITH 1
+INCREMENT BY 1;
 
 
 -- ----------------------------------------------------------------------
@@ -376,8 +383,13 @@ ORDER BY 2;
 --  Step #3b : Create natural key index on the AIRPORT table.
 -- ----------------------------------------------------------------------
 ---***Add by student
-
-
+CREATE UNIQUE INDEX nk_airport
+ON airport (
+	airport_code,
+	airport_city,
+	city,
+	state_province
+);
 
 
 
@@ -400,6 +412,8 @@ WHERE    i.table_name = 'AIRPORT'
 AND      i.uniqueness = 'UNIQUE'
 AND      i.index_name = 'NK_AIRPORT';
 
+
+SPOOL OFF
 -- ----------------------------------------------------------------------
 --  Step #3c : Insert rows into the AIRPORT table.
 -- ----------------------------------------------------------------------
