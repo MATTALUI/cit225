@@ -153,13 +153,146 @@ WHERE    i.table_name = 'TRANSACTION'
 AND      i.uniqueness = 'UNIQUE'
 AND      i.index_name = 'NATURAL_KEY';
 
-SPOOL OFF
 -- ----------------------------------------------------------------------
 --  Step #2 : Insert new rows in COMMON_LOOKUP table.
 -- ----------------------------------------------------------------------
 ---***Add by student
-
-
+INSERT INTO common_lookup
+(	common_lookup_id
+,	common_lookup_type
+,	common_lookup_meaning
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	common_lookup_table
+,	common_lookup_column
+,	common_lookup_code
+)
+VALUES
+(	common_lookup_s1.nextval
+,	'CREDIT'
+,	'Credit'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	'TRANSACTION'
+,	'TRANSACTION_TYPE'
+,	'CR'
+);
+INSERT INTO common_lookup
+(	common_lookup_id
+,	common_lookup_type
+,	common_lookup_meaning
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	common_lookup_table
+,	common_lookup_column
+,	common_lookup_code
+)
+VALUES
+(	common_lookup_s1.nextval
+,	'DEBIT'
+,	'Debit'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	'TRANSACTION'
+,	'TRANSACTION_TYPE'
+,	'DR'
+);
+INSERT INTO common_lookup
+(	common_lookup_id
+,	common_lookup_type
+,	common_lookup_meaning
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	common_lookup_table
+,	common_lookup_column
+)
+VALUES
+(	common_lookup_s1.nextval
+,	'DISCOVER_CARD'
+,	'Discover Card'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	'TRANSACTION'
+,	'PAYMENT_METHOD_TYPE'
+);
+INSERT INTO common_lookup
+(	common_lookup_id
+,	common_lookup_type
+,	common_lookup_meaning
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	common_lookup_table
+,	common_lookup_column
+)
+VALUES
+(	common_lookup_s1.nextval
+,	'VISA_CARD'
+,	'Visa Card'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	'TRANSACTION'
+,	'PAYMENT_METHOD_TYPE'
+);
+INSERT INTO common_lookup
+(	common_lookup_id
+,	common_lookup_type
+,	common_lookup_meaning
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	common_lookup_table
+,	common_lookup_column
+)
+VALUES
+(	common_lookup_s1.nextval
+,	'MASTER_CARD'
+,	'Master Card'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	'TRANSACTION'
+,	'PAYMENT_METHOD_TYPE'
+);
+INSERT INTO common_lookup
+(	common_lookup_id
+,	common_lookup_type
+,	common_lookup_meaning
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+,	common_lookup_table
+,	common_lookup_column
+)
+VALUES
+(	common_lookup_s1.nextval
+,	'CASH'
+,	'Cash'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+,	'TRANSACTION'
+,	'PAYMENT_METHOD_TYPE'
+);
 
 -- ----------------------------------------------------------------------
 --  Verify #2 : Insert new rows in COMMON_LOOKUP table.
@@ -175,6 +308,7 @@ WHERE    common_lookup_table = 'TRANSACTION'
 AND      common_lookup_column IN ('TRANSACTION_TYPE','PAYMENT_METHOD_TYPE')
 ORDER BY 1, 2, 3 DESC;
 
+SPOOL OFF
 -- ----------------------------------------------------------------------
 --  Step #3a : Create and seed AIRPORT and ACCOUNT_LIST tables.
 -- ----------------------------------------------------------------------
