@@ -413,13 +413,142 @@ AND      i.uniqueness = 'UNIQUE'
 AND      i.index_name = 'NK_AIRPORT';
 
 
-SPOOL OFF
 -- ----------------------------------------------------------------------
 --  Step #3c : Insert rows into the AIRPORT table.
 -- ----------------------------------------------------------------------
 ---***Add by student
-
-
+INSERT INTO airport
+(	airport_id
+,	airport_code
+,	airport_city
+,	city
+,	state_province
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+)
+VALUES
+(	airport_s1.nextval
+,	'LAX'
+,	'Los Angeles'
+,	'Los Angeles'
+,	'California'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+);
+INSERT INTO airport
+(	airport_id
+,	airport_code
+,	airport_city
+,	city
+,	state_province
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+)
+VALUES
+(	airport_s1.nextval
+,	'SLC'
+,	'Salt Lake City'
+,	'Provo'
+,	'Utah'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+);
+INSERT INTO airport
+(	airport_id
+,	airport_code
+,	airport_city
+,	city
+,	state_province
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+)
+VALUES
+(	airport_s1.nextval
+,	'SLC'
+,	'Salt Lake City'
+,	'Spanish Fork'
+,	'Utah'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+);
+INSERT INTO airport
+(	airport_id
+,	airport_code
+,	airport_city
+,	city
+,	state_province
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+)
+VALUES
+(	airport_s1.nextval
+,	'SFO'
+,	'San Francisco'
+,	'San Francisco'
+,	'California'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+);
+INSERT INTO airport
+(	airport_id
+,	airport_code
+,	airport_city
+,	city
+,	state_province
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+)
+VALUES
+(	airport_s1.nextval
+,	'SJC'
+,	'San Jose'
+,	'San Jose'
+,	'California'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+);
+INSERT INTO airport
+(	airport_id
+,	airport_code
+,	airport_city
+,	city
+,	state_province
+,	created_by
+,	creation_date
+,	last_updated_by
+,	last_update_date
+)
+VALUES
+(	airport_s1.nextval
+,	'SJC'
+,	'San Jose'
+,	'San Carlos'
+,	'California'
+,	1002
+,	SYSDATE
+,	1002
+,	SYSDATE
+);
 
 
 -- ----------------------------------------------------------------------
@@ -454,7 +583,20 @@ END;
 --  Step #3d : Create the ACCOUNT_LIST table.
 -- ----------------------------------------------------------------------
 ---***Add by student
-
+CREATE TABLE account_list
+(	account_list_id	 NUMBER		NOT NULL
+,	account_number	 VARCHAR(10)	NOT NULL
+,	consumed_date	 DATE
+,	consumed_by	 NUMBER
+,	created_by	 NUMBER		NOT NULL
+,	creation_date	 DATE		NOT NULL
+,	last_updated_by	 NUMBER		NOT NULL
+,	last_update_date DATE		NOT NULL
+,	CONSTRAINT pk_account_list   PRIMARY KEY (account_list_id)
+,	CONSTRAINT fk_account_list_1 FOREIGN KEY (consumed_by)      REFERENCES system_user (system_user_id)
+,	CONSTRAINT fk_account_list_2 FOREIGN KEY (created_by)       REFERENCES system_user (system_user_id)
+,	CONSTRAINT fk_account_list_3 FOREIGN KEY (last_updated_by)  REFERENCES system_user (system_user_id)
+);
 
 
 
@@ -466,6 +608,9 @@ END;
 
 -- Create sequence.
 
+CREATE SEQUENCE account_list_s1
+START WITH 1
+INCREMENT BY 1;
 
 
 
@@ -579,7 +724,9 @@ ORDER BY 1;
 --  Step #3f : Update the ADDRESS table.
 -- ----------------------------------------------------------------------
 ---***Add by student
-
+UPDATE address
+SET    state_province = 'California'
+WHERE  state_province = 'CA';
 
 
 
@@ -731,6 +878,7 @@ ON       a.city = ap.city
 AND      a.state_province = ap.state_province INNER JOIN account_list al
 ON       ap.airport_code = SUBSTR(al.account_number,1,3)
 ORDER BY 1;
+
 ---Second Verification query to check the changes in member id. Query distinct members and addresses.
 
 
@@ -784,7 +932,21 @@ END;
 -- ----------------------------------------------
 ---***Add by student
 
-
+CREATE TABLE transaction_upload
+(	account_number	 	VARCHAR(10)
+,	first_name	 	VARCHAR(20)
+,	middle_name	 	VARCHAR(20)
+,	last_name	 	VARCHAR(20)
+,	check_out_date	 	DATE
+,	return_date	 	DATE
+,	rental_item_type 	VARCHAR(12)
+,	transaction_type 	VARCHAR(14)
+,	transaction_amount	NUMBER
+,	transaction_date	DATE
+,	item_id			NUMBER
+,	payment_method_type	VARCHAR(14)
+,	payment_account_number	VARCHAR(19)
+);
 
 
 
