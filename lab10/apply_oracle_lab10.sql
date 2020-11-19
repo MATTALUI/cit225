@@ -45,25 +45,24 @@ COLUMN created_by       FORMAT 9999 HEADING "Created|By"
 COLUMN creation_date    FORMAT A10  HEADING "Creation|Date"
 COLUMN last_updated_by  FORMAT 9999 HEADING "Last|Update|By"
 COLUMN last_update_date FORMAT A10  HEADING "Last|Updated"
-SELECT   DISTINCT
-         r.rental_id
-,        c.contact_id
-,        tu.check_out_date AS check_out_date
-,        tu.return_date AS return_date
-,        3 AS created_by
-,        TRUNC(SYSDATE) AS creation_date
-,        3 AS last_updated_by
-,        TRUNC(SYSDATE) AS last_update_date
-FROM     ...
-
-
-
-
-
-
-
-
-
+SELECT   	DISTINCT
+         	r.rental_id
+,        	c.contact_id
+,        	tu.check_out_date AS check_out_date
+,        	tu.return_date AS return_date
+,        	1001 AS created_by
+,        	TRUNC(SYSDATE) AS creation_date
+,        	1001 AS last_updated_by
+,        	TRUNC(SYSDATE) AS last_update_date
+FROM     	member m INNER JOIN contact c
+ON       	m.member_id = c.member_id INNER JOIN transaction_upload tu
+ON       	c.first_name = tu.first_name
+AND      	NVL(c.middle_name,'x') = NVL(tu.middle_name,'x')
+AND      	c.last_name = tu.last_name
+LEFT JOIN	rental r
+ON		r.customer_id = c.contact_id
+AND		TRUNC(tu.return_date) = TRUNC(r.return_date)
+AND		TRUNC(tu.check_out_date) = TRUNC(r.check_out_date);
 
 -- ----------------------------------------------------------------------
 --  Step #1 : Fix insert, insert records from query.
@@ -91,12 +90,16 @@ FROM    (SELECT   DISTINCT
          ,        TRUNC(SYSDATE) AS creation_date
          ,        1001 AS last_updated_by
          ,        TRUNC(SYSDATE) AS last_update_date
-         FROM     member m INNER JOIN contact c
-         ON       m.member_id = c.member_id INNER JOIN transaction_upload tu
-         ON       c.first_name = tu.first_name
-         AND      NVL(c.middle_name,'x') = NVL(tu.middle_name,'x')
-         AND      c.last_name = tu.last_name
-         ... REMAINDER OF join solution ... ) r;
+         FROM     	member m INNER JOIN contact c
+         ON       	m.member_id = c.member_id INNER JOIN transaction_upload tu
+         ON       	c.first_name = tu.first_name
+         AND      	NVL(c.middle_name,'x') = NVL(tu.middle_name,'x')
+         AND      	c.last_name = tu.last_name
+	 LEFT JOIN	rental r
+	 ON		r.customer_id = c.contact_id
+	 AND		TRUNC(tu.return_date) = TRUNC(r.return_date)
+	 AND		TRUNC(tu.check_out_date) = TRUNC(r.check_out_date)
+        ) r;
 
 -- ----------------------------------------------------------------------
 --  Step #1 : Verify number of rows after insert.
@@ -137,16 +140,21 @@ SELECT   ri.rental_item_id
 ,        TRUNC(SYSDATE) AS creation_date
 ,        1001 AS last_updated_by
 ,        TRUNC(SYSDATE) AS last_update_date
-FROM     ...
-
-
-
-
-
-
-
-
-
+FROM     	member m INNER JOIN contact c
+ON       	m.member_id = c.member_id INNER JOIN transaction_upload tu
+ON       	c.first_name = tu.first_name
+AND      	NVL(c.middle_name,'x') = NVL(tu.middle_name,'x')
+AND      	c.last_name = tu.last_name
+LEFT JOIN	rental r
+ON		r.customer_id = c.contact_id
+AND		TRUNC(tu.return_date) = TRUNC(r.return_date)
+AND		TRUNC(tu.check_out_date) = TRUNC(r.check_out_date)
+JOIN		common_lookup cl
+ON      	cl.common_lookup_table = 'RENTAL_ITEM'
+AND     	cl.common_lookup_column = 'RENTAL_ITEM_TYPE'
+AND     	cl.common_lookup_type = tu.rental_item_type
+LEFT JOIN	rental_item ri
+ON		ri.rental_id = r.rental_id;
 
 
 -- ----------------------------------------------------------------------
@@ -162,35 +170,34 @@ INSERT INTO rental_item
 (SELECT   NVL(ri.rental_item_id,rental_item_s1.NEXTVAL)
  ,        r.rental_id
  ,        tu.item_id
- ,        3 AS created_by
+ ,        1001 AS created_by
  ,        TRUNC(SYSDATE) AS creation_date
- ,        3 AS last_updated_by
+ ,        1001 AS last_updated_by
  ,        TRUNC(SYSDATE) AS last_update_date
  ,        cl.common_lookup_id AS rental_item_type
  ,        r.return_date - r.check_out_date AS rental_item_price
- FROM     member m INNER JOIN contact c
- ON       m.member_id = c.member_id INNER JOIN transaction_upload tu
- ON       c.first_name = tu.first_name
- AND      NVL(c.middle_name,'x') = NVL(tu.middle_name,'x')
- AND      c.last_name = tu.last_name
- AND      tu.account_number = m.account_number
-          ... REMAINDER OF join solution ... );
-
-
-
-
-
-
-
-
-
+ FROM     	member m INNER JOIN contact c
+ ON       	m.member_id = c.member_id INNER JOIN transaction_upload tu
+ ON       	c.first_name = tu.first_name
+ AND      	NVL(c.middle_name,'x') = NVL(tu.middle_name,'x')
+ AND      	c.last_name = tu.last_name
+ LEFT JOIN	rental r
+ ON		r.customer_id = c.contact_id
+ AND		TRUNC(tu.return_date) = TRUNC(r.return_date)
+ AND		TRUNC(tu.check_out_date) = TRUNC(r.check_out_date)
+ JOIN		common_lookup cl
+ ON      	cl.common_lookup_table = 'RENTAL_ITEM'
+ AND     	cl.common_lookup_column = 'RENTAL_ITEM_TYPE'
+ AND     	cl.common_lookup_type = tu.rental_item_type
+ LEFT JOIN	rental_item ri
+ ON		ri.rental_id = r.rental_id);
 
 -- ----------------------------------------------------------------------
 --  Step #2 : Verify number of rows after insert.
 -- ----------------------------------------------------------------------
 SELECT   COUNT(*)
 FROM     rental_item;
-
+SPOOL OFF
 -- ----------------------------------------------------------------------
 --  Step #3 : Query records and insert into TRANSACTION table.
 -- ----------------------------------------------------------------------
