@@ -466,44 +466,33 @@ FROM    (SELECT COUNT(*) AS rental_count FROM rental) CROSS JOIN
         (SELECT COUNT(*) AS rental_item_count FROM rental_item) CROSS JOIN
         (SELECT COUNT(*) AS transaction_count FROM transaction);
 
-SPOOL OFF
 -- --------------------------------------------------------
 --  Step #5 : Demonstrate aggregation with sorting options.
 -- --------------------------------------------------------
 -- Expand line length in environment.
 SET LINESIZE 150
-COLUMN month FORMAT A10 HEADING "MONTH"
+COLUMN month 		FORMAT A15 HEADING "MONTH"
+COLUMN base_revenue 	FORMAT A15 HEADING "BASE REVENUE"
+COLUMN ten_plus 	FORMAT A15 HEADING "10% PLUS"
+COLUMN twenty_plus 	FORMAT A15 HEADING "20% PLUS"
+COLUMN ten_diff		FORMAT A15 HEADING "10% DIFFERENCE"
+COLUMN twenty_diff	FORMAT A15 HEADING "20% DIFFERENCE"
 
--- Query, aggregate, and sort data.
--- Query for initial counts, should return:
--- --------------------------------------------------------------------------------------------
--- MONTH      BASE_REVENUE   10_PLUS        20_PLUS        10_PLUS_LESS_B 20_PLUS_LESS_B
--- ---------- -------------- -------------- -------------- -------------- --------------
--- JAN-2009        $2,671.20      $2,938.32      $3,205.44        $267.12        $534.24
--- FEB-2009        $4,270.74      $4,697.81      $5,124.89        $427.07        $854.15
--- MAR-2009        $5,371.02      $5,908.12      $6,445.22        $537.10      $1,074.20
--- APR-2009        $4,932.18      $5,425.40      $5,918.62        $493.22        $986.44
--- MAY-2009        $2,216.46      $2,438.11      $2,659.75        $221.65        $443.29
--- JUN-2009        $1,208.40      $1,329.24      $1,450.08        $120.84        $241.68
--- JUL-2009        $2,404.08      $2,644.49      $2,884.90        $240.41        $480.82
--- AUG-2009        $2,241.90      $2,466.09      $2,690.28        $224.19        $448.38
--- SEP-2009        $2,197.38      $2,417.12      $2,636.86        $219.74        $439.48
--- OCT-2009        $3,275.40      $3,602.94      $3,930.48        $327.54        $655.08
--- NOV-2009        $3,125.94      $3,438.53      $3,751.13        $312.59        $625.19
--- DEC-2009        $2,340.48      $2,574.53      $2,808.58        $234.05        $468.10
--- --------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
+SELECT 		TO_CHAR(TO_DATE(month_num, 'MM'), 'MONTH')||'-'||year AS month
+,		TO_CHAR(base_revenue,'$9,999,999.00') AS base_revenue
+,		TO_CHAR(base_revenue * 1.1,'$9,999,999.00') AS ten_plus
+,		TO_CHAR(base_revenue * 1.2,'$9,999,999.00') AS twenty_plus
+,		TO_CHAR(base_revenue * 1.1 - base_revenue,'$9,999,999.00') as ten_diff
+,		TO_CHAR(base_revenue * 1.2 - base_revenue,'$9,999,999.00') as twenty_diff
+FROM (	
+	SELECT 		EXTRACT(MONTH FROM TO_DATE(t.transaction_date)) AS month_num
+	,		EXTRACT(YEAR FROM TO_DATE(t.transaction_date))  AS year
+	,		SUM(t.transaction_amount) AS base_revenue
+	FROM		transaction t
+	WHERE		EXTRACT(YEAR FROM TO_DATE(t.transaction_date)) = 2009
+	GROUP BY 	EXTRACT(MONTH FROM TO_DATE(t.transaction_date))
+	,		EXTRACT(YEAR FROM TO_DATE(t.transaction_date)) 
+	ORDER BY 	month_num
+);
 
 SPOOL OFF
