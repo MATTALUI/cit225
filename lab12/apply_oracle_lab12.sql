@@ -45,24 +45,25 @@ END;
 -- --------------------------------------------------------------------------------
 --  Step #1 : Create the CALENDAR table.
 -- --------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
+CREATE TABLE calendar
+(	calendar_id		NUMBER
+,	calendar_name		VARCHAR(10)	NOT NULL
+,	calendar_short_name	VARCHAR(3)	NOT NULL
+,	start_date		DATE		NOT NULL
+,	end_date		DATE		NOT NULL
+,	created_by		NUMBER		NOT NULL
+,	creation_date		DATE		NOT NULL
+,	last_update_by		NUMBER		NOT NULL
+,	last_update_date	DATE		NOT NULL
+,	CONSTRAINT pk_calendar PRIMARY KEY (calendar_id)
+,	CONSTRAINT fk_calendar_1 FOREIGN KEY (created_by) REFERENCES system_user (system_user_id)
+,	CONSTRAINT fk_calendar_2 FOREIGN KEY (last_update_by) REFERENCES system_user (system_user_id)
+);
 
 -- --------------------------------------------------------------------------------
 --  Step #1 : Create the CALENDAR sequence.
 -- --------------------------------------------------------------------------------
-
-
-
-
-
-
+CREATE SEQUENCE calendar_s1;
 
 -- Display the table organization.
 SET NULL ''
@@ -101,7 +102,6 @@ WHERE    uc.table_name = UPPER('calendar')
 AND      uc.constraint_type IN (UPPER('c'),UPPER('p'))
 ORDER BY uc.constraint_type DESC
 ,        uc.constraint_name;
-
 -- Display foreign key constraints.
 COL constraint_source FORMAT A38 HEADING "Constraint Name:| Table.Column"
 COL references_column FORMAT A40 HEADING "References:| Table.Column"
@@ -207,12 +207,34 @@ END;
 -- --------------------------------------------------------------------------------
 
 
-
-
-
-
-
-
+CREATE TABLE transaction_reversal
+(	transaction_id		NUMBER
+,	transaction_account	VARCHAR(15)
+,	transaction_type	NUMBER
+,	transaction_date	DATE
+,	transaction_amount	NUMBER
+,	rental_id		NUMBER
+,	payment_method_type	NUMBER
+,	payment_account_number	VARCHAR(19)
+,	created_by		NUMBER
+,	creation_date		DATE
+,	last_updated_by		NUMBER
+,	last_update_date	DATE
+--,	CONSTRAINT pk_transaction_reversal PRIMARY KEY (transaction_id)
+)
+ORGANIZATION EXTERNAL
+(	TYPE oracle_loader
+	DEFAULT DIRECTORY upload
+	ACCESS PARAMETERS
+	(	RECORDS DELIMITED BY NEWLINE CHARACTERSET US7ASCII
+      		BADFILE		'UPLOAD':'transaction_reversal.bad'
+      		DISCARDFILE	'UPLOAD':'transaction_reversal.dis'
+      		LOGFILE		'UPLOAD':'transaction_reversal.log'
+      		FIELDS TERMINATED BY ','
+      		OPTIONALLY ENCLOSED BY "'"
+      		MISSING FIELD VALUES ARE NULL )
+	LOCATION ('transaction_upload2.csv')
+) REJECT LIMIT UNLIMITED;
 
 
 -- Select the uploaded records.
@@ -225,14 +247,21 @@ DELETE FROM transaction WHERE transaction_account = '222-222-222-222';
 --  Step #3 : Insert records into the TRANSACTION_REVERSAL table.
 -- --------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
+INSERT INTO transaction
+(	SELECT 	transaction_s1.NEXTVAL AS transaction_id
+	,	transaction_account
+	,	transaction_type
+	,	transaction_date
+	,	transaction_amount
+	,	rental_id
+	,	payment_method_type
+	,	payment_account_number
+	,	1001 AS created_by
+	,	SYSDATE AS creation_date
+	,	1001 AS last_updated_by
+	,	SYSDATE as last_update_date
+	FROM    transaction_reversal
+);
 
 -- --------------------------------------------------------------------------------
 --  Step #3 : Verify insert of records into the TRANSACTION_REVERSAL table.
@@ -246,7 +275,7 @@ SELECT   LPAD(TO_CHAR(c1.transaction_count,'99,999'),19,' ') AS "Debit Transacti
 FROM    (SELECT COUNT(*) AS transaction_count FROM transaction WHERE transaction_account = '111-111-111-111') c1 CROSS JOIN
         (SELECT COUNT(*) AS transaction_count FROM transaction WHERE transaction_account = '222-222-222-222') c2 CROSS JOIN
         (SELECT COUNT(*) AS transaction_count FROM transaction) c3;
-
+SPOOL OFF
 -- --------------------------------------------------------------------------------
 --  Step #4 : Query data.
 -- --------------------------------------------------------------------------------
