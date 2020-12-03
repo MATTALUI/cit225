@@ -303,23 +303,23 @@ SET LINESIZE 210
 
 -- Reassign column values.
 SELECT   transaction_account AS "Transaction"
---,        january AS "Jan"
---,        february AS "Feb"
+,        january AS "Jan"
+,        february AS "Feb"
 ,        march AS "Mar"
 ,        f1q AS "F1Q"
---,        april AS "Apr"
---,        may AS "May"
---,        june AS "Jun"
---,        f2q AS "F2Q"
---,        july AS "Jul"
---,        august AS "Aug"
---,        september AS "Sep"
---,        f3q AS "F3Q"
---,        october AS "Oct"
---,        november AS "Nov"
---,        december AS "Dec"
---,        f4q AS "F4Q"
---,        ytd AS "YTD"
+,        april AS "Apr"
+,        may AS "May"
+,        june AS "Jun"
+,        f2q AS "F2Q"
+,        july AS "Jul"
+,        august AS "Aug"
+,        september AS "Sep"
+,        f3q AS "F3Q"
+,        october AS "Oct"
+,        november AS "Nov"
+,        december AS "Dec"
+,        f4q AS "F4Q"
+,        ytd AS "YTD"
 FROM (
 SELECT   CASE
            WHEN t.transaction_account = '111-111-111-111' THEN 'Debit'
@@ -369,7 +369,126 @@ SELECT   CASE
                    ELSE t.transaction_amount * -1
                  END
              END),'99,999.00'),10,' ') AS "F1Q"
---...
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 4 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "APRIL"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 5 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "MAY"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 6 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "JUNE"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) IN (4, 5, 6) AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "F2Q"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 7 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "JULY"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 8 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "AUGUST"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 9 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "SEPTEMBER"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) IN (7, 8, 9) AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "F3Q"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 10 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "OCTOBER"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 11 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "NOVEMBER"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 12 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "DECEMBER"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) IN (10, 11, 12) AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "F4Q"
 ,        LPAD(TO_CHAR
         (SUM(CASE
                WHEN EXTRACT(YEAR FROM transaction_date) = 2009 THEN
@@ -434,7 +553,126 @@ SELECT  'Total' AS "Account"
                    ELSE t.transaction_amount * -1
                  END
              END),'99,999.00'),10,' ') AS "F1Q"
---...
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 4 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "APRIL"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 5 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "MAY"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 6 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "JUNE"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) IN (4, 5, 6) AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "F2Q"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 7 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "JULY"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 8 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "AUGUST"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 9 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "SEPTEMBER"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) IN (7, 8, 9) AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "F3Q"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 10 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "OCTOBER"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 11 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "NOVEMBER"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) = 12 AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "DECEMBER"
+,        LPAD(TO_CHAR
+        (SUM(CASE
+               WHEN EXTRACT(MONTH FROM transaction_date) IN (10, 11, 12) AND
+                    EXTRACT(YEAR FROM transaction_date) = 2009 THEN
+                 CASE
+                   WHEN cl.common_lookup_type = 'DEBIT'
+                   THEN t.transaction_amount
+                   ELSE t.transaction_amount * -1
+                 END
+             END),'99,999.00'),10,' ') AS "F4Q"
 ,        LPAD(TO_CHAR
         (SUM(CASE
                WHEN EXTRACT(YEAR FROM transaction_date) = 2009 THEN
